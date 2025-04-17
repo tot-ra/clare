@@ -1,9 +1,9 @@
 {
 	"name": "claude-dev",
-	"displayName": "Cline",
+	"displayName": "CLARE",
 	"description": "Autonomous coding agent right in your IDE, capable of creating/editing files, running commands, using the browser, and more with your permission every step of the way.",
 	"version": "3.12.3",
-	"icon": "assets/icons/icon.png",
+	"icon": "assets/icons/clarifai-icon.svg",
 	"engines": {
 		"vscode": "^1.84.0"
 	},
@@ -46,8 +46,8 @@
 			"activitybar": [
 				{
 					"id": "claude-dev-ActivityBar",
-					"title": "Cline",
-					"icon": "assets/icons/icon.svg"
+					"title": "CLARE",
+					"icon": "assets/icons/clarifai-icon.svg"
 				}
 			]
 		},
