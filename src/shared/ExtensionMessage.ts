@@ -50,6 +50,7 @@ export interface ExtensionMessage {
 		| "relativePathsResponse" // Handles single and multiple path responses
 		| "fileSearchResults"
 		| "grpc_response" // New type for gRPC responses
+		| "clarifaiModels" // Add clarifaiModels type
 	text?: string
 	paths?: (string | null)[] // Used for relativePathsResponse
 	action?:
@@ -73,6 +74,7 @@ export interface ExtensionMessage {
 	openRouterModels?: Record<string, ModelInfo>
 	openAiModels?: string[]
 	requestyModels?: Record<string, ModelInfo>
+	clarifaiModels?: string[] // Add response type
 	mcpServers?: McpServer[]
 	customToken?: string
 	mcpMarketplaceCatalog?: McpMarketplaceCatalog

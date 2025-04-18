@@ -39,7 +39,21 @@
 		"ai",
 		"llama"
 	],
-	"activationEvents": [],
+	"activationEvents": [
+		"onView:claude-dev.SidebarProvider",
+		"onCommand:cline.plusButtonClicked",
+		"onCommand:cline.mcpButtonClicked",
+		"onCommand:cline.historyButtonClicked",
+		"onCommand:cline.popoutButtonClicked",
+		"onCommand:cline.accountButtonClicked",
+		"onCommand:cline.settingsButtonClicked",
+		"onCommand:cline.openInNewTab",
+		"onCommand:cline.addToChat",
+		"onCommand:cline.addTerminalOutputToChat",
+		"onCommand:cline.fixWithCline",
+		"onCommand:cline.focusChatInput",
+		"onCommand:cline.listClarifaiModels"
+	],
 	"main": "./dist/extension.js",
 	"contributes": {
 		"viewsContainers": {
@@ -120,6 +134,11 @@
 			{
 				"command": "cline.focusChatInput",
 				"title": "Jump to Chat Input",
+				"category": "Cline"
+			},
+			{
+				"command": "cline.listClarifaiModels",
+				"title": "List Clarifai Models",
 				"category": "Cline"
 			}
 		],
@@ -283,6 +302,16 @@
 					"type": "boolean",
 					"default": true,
 					"description": "Controls whether the MCP Marketplace is enabled."
+				},
+				"cline.clarifaiApiKey": {
+					"type": "string",
+					"default": null,
+					"description": "API Key for Clarifai provider."
+				},
+				"cline.clarifaiApiBaseUrl": {
+					"type": "string",
+					"default": null,
+					"description": "Optional custom base URL for Clarifai API (e.g., for self-hosted instances). Defaults to https://api.clarifai.com."
 				}
 			}
 		}

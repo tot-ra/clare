@@ -123,6 +123,7 @@ export async function getAllExtensionState(context: vscode.ExtensionContext) {
 		planActSeparateModelsSettingRaw,
 		favoritedModelIds,
 		globalClineRulesToggles,
+		clarifaiPat, // Added clarifaiPat variable
 	] = await Promise.all([
 		getGlobalState(context, "apiProvider") as Promise<ApiProvider | undefined>,
 		getGlobalState(context, "apiModelId") as Promise<string | undefined>,
@@ -194,6 +195,7 @@ export async function getAllExtensionState(context: vscode.ExtensionContext) {
 		getGlobalState(context, "planActSeparateModelsSetting") as Promise<boolean | undefined>,
 		getGlobalState(context, "favoritedModelIds") as Promise<string[] | undefined>,
 		getGlobalState(context, "globalClineRulesToggles") as Promise<ClineRulesToggles | undefined>,
+		getSecret(context, "clarifaiPat") as Promise<string | undefined>, // Added clarifaiPat
 	])
 
 	let apiProvider: ApiProvider
@@ -290,6 +292,7 @@ export async function getAllExtensionState(context: vscode.ExtensionContext) {
 			asksageApiUrl,
 			xaiApiKey,
 			sambanovaApiKey,
+			clarifaiPat, // Added clarifaiPat
 			favoritedModelIds,
 		},
 		lastShownAnnouncementId,
@@ -368,6 +371,7 @@ export async function updateApiConfiguration(context: vscode.ExtensionContext, a
 		reasoningEffort,
 		clineApiKey,
 		sambanovaApiKey,
+		clarifaiPat, // Added clarifaiPat
 		favoritedModelIds,
 	} = apiConfiguration
 	await updateGlobalState(context, "apiProvider", apiProvider)
@@ -423,6 +427,7 @@ export async function updateApiConfiguration(context: vscode.ExtensionContext, a
 	await updateGlobalState(context, "reasoningEffort", reasoningEffort)
 	await storeSecret(context, "clineApiKey", clineApiKey)
 	await storeSecret(context, "sambanovaApiKey", sambanovaApiKey)
+	await storeSecret(context, "clarifaiPat", clarifaiPat) // Added clarifaiPat
 	await updateGlobalState(context, "favoritedModelIds", favoritedModelIds)
 }
 
@@ -450,6 +455,7 @@ export async function resetExtensionState(context: vscode.ExtensionContext) {
 		"asksageApiKey",
 		"xaiApiKey",
 		"sambanovaApiKey",
+		"clarifaiPat", // Added clarifaiPat
 	]
 	for (const key of secretKeys) {
 		await storeSecret(context, key, undefined)

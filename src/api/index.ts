@@ -22,6 +22,7 @@ import { LiteLlmHandler } from "./providers/litellm"
 import { AskSageHandler } from "./providers/asksage"
 import { XAIHandler } from "./providers/xai"
 import { SambanovaHandler } from "./providers/sambanova"
+import { ClarifaiHandler } from "./providers/clarifai" // Ensure import exists
 
 export interface ApiHandler {
 	createMessage(systemPrompt: string, messages: Anthropic.Messages.MessageParam[]): ApiStream
@@ -78,6 +79,8 @@ export function buildApiHandler(configuration: ApiConfiguration): ApiHandler {
 			return new XAIHandler(options)
 		case "sambanova":
 			return new SambanovaHandler(options)
+		case "clarifai": // Ensure case exists
+			return new ClarifaiHandler(options)
 		default:
 			return new AnthropicHandler(options)
 	}

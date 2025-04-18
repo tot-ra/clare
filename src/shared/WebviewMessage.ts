@@ -24,6 +24,7 @@ export interface WebviewMessage {
 		| "resetState"
 		| "requestOllamaModels"
 		| "requestLmStudioModels"
+		| "requestClarifaiModels" // Add request type
 		| "openImage"
 		| "openInBrowser"
 		| "openFile"

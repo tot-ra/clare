@@ -22,6 +22,7 @@ export type ApiProvider =
 	| "asksage"
 	| "xai"
 	| "sambanova"
+	| "clarifai" // Added Clarifai
 
 export interface ApiHandlerOptions {
 	apiModelId?: string
@@ -78,6 +79,9 @@ export interface ApiHandlerOptions {
 	thinkingBudgetTokens?: number
 	reasoningEffort?: string
 	sambanovaApiKey?: string
+	clarifaiPat?: string // Added Clarifai PAT
+	clarifaiApiKey?: string // Keeping this for potential future use or if PAT isn't the only auth method
+	clarifaiApiBaseUrl?: string
 }
 
 export type ApiConfiguration = ApiHandlerOptions & {

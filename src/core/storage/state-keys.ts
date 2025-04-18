@@ -19,6 +19,7 @@ export type SecretKey =
 	| "asksageApiKey"
 	| "xaiApiKey"
 	| "sambanovaApiKey"
+	| "clarifaiPat" // Added Clarifai PAT
 
 export type GlobalStateKey =
 	| "apiProvider"

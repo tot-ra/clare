@@ -50,6 +50,7 @@ import {
 import { Task, cwd } from "../task"
 import { ClineRulesToggles } from "../../shared/cline-rules"
 import { refreshClineRulesToggles } from "../context/instructions/user-instructions/cline-rules"
+import { ClarifaiHandler } from "../../api/providers/clarifai" // Import ClarifaiHandler
 
 /*
 https://github.com/microsoft/vscode-webview-ui-toolkit-samples/blob/main/default/weather-webview/src/providers/WeatherViewProvider.ts
@@ -418,6 +419,33 @@ export class Controller {
 				const vsCodeLmModels = await this.getVsCodeLmModels()
 				this.postMessageToWebview({ type: "vsCodeLmModels", vsCodeLmModels })
 				break
+			case "requestClarifaiModels": {
+				// Add case for Clarifai
+				console.log("Controller: Received requestClarifaiModels") // <-- Log entry
+				const pat = message.text
+				let clarifaiModels: string[] = []
+				if (pat) {
+					try {
+						// We need the full config to build the handler, even if we only use the PAT
+						const { apiConfiguration } = await getAllExtensionState(this.context)
+						console.log("Controller: Building ClarifaiHandler with PAT:", pat ? "present" : "missing") // <-- Log PAT presence
+						const handler = new ClarifaiHandler({ ...apiConfiguration, clarifaiPat: pat })
+						clarifaiModels = await handler.listAvailableModels() // Corrected method name
+						console.log("Controller: Fetched Clarifai models:", clarifaiModels) // <-- Log fetched models
+					} catch (error) {
+						console.error("Controller: Error fetching Clarifai models:", error)
+						// Send empty array on error
+					}
+				} else {
+					console.log("Controller: No PAT provided for Clarifai models request.") // <-- Log missing PAT
+				}
+				console.log("Controller: Sending clarifaiModels message to UI:", clarifaiModels) // <-- Log before sending
+				this.postMessageToWebview({
+					type: "clarifaiModels",
+					clarifaiModels,
+				})
+				break
+			}
 			case "refreshOpenRouterModels":
 				await this.refreshOpenRouterModels()
 				break

@@ -95,6 +95,7 @@ const ApiOptions = ({ showModelOptions, apiErrorMessage, modelIdErrorMessage, is
 	const { apiConfiguration, setApiConfiguration, uriScheme } = useExtensionState()
 	const [ollamaModels, setOllamaModels] = useState<string[]>([])
 	const [lmStudioModels, setLmStudioModels] = useState<string[]>([])
+	const [clarifaiModels, setClarifaiModels] = useState<string[]>([]) // Add state for Clarifai models
 	const [vsCodeLmModels, setVsCodeLmModels] = useState<vscodemodels.LanguageModelChatSelector[]>([])
 	const [anthropicBaseUrlSelected, setAnthropicBaseUrlSelected] = useState(!!apiConfiguration?.anthropicBaseUrl)
 	const [azureApiVersionSelected, setAzureApiVersionSelected] = useState(!!apiConfiguration?.azureApiVersion)
@@ -123,6 +124,13 @@ const ApiOptions = ({ showModelOptions, apiErrorMessage, modelIdErrorMessage, is
 					apiProvider: newValue,
 				},
 			})
+			// Request models if switching to Clarifai and PAT exists
+			if (newValue === "clarifai" && apiConfiguration?.clarifaiPat) {
+				vscode.postMessage({ type: "requestClarifaiModels", text: apiConfiguration.clarifaiPat })
+			}
+		} else if (field === "clarifaiPat" && selectedProvider === "clarifai" && newValue) {
+			// Request models when PAT changes for Clarifai provider
+			vscode.postMessage({ type: "requestClarifaiModels", text: newValue })
 		}
 	}
 
@@ -144,16 +152,29 @@ const ApiOptions = ({ showModelOptions, apiErrorMessage, modelIdErrorMessage, is
 			})
 		} else if (selectedProvider === "vscode-lm") {
 			vscode.postMessage({ type: "requestVsCodeLmModels" })
+		} else if (selectedProvider === "clarifai" && apiConfiguration?.clarifaiPat) {
+			// Also request on initial load if Clarifai is selected and PAT exists
+			vscode.postMessage({ type: "requestClarifaiModels", text: apiConfiguration.clarifaiPat })
 		}
-	}, [selectedProvider, apiConfiguration?.ollamaBaseUrl, apiConfiguration?.lmStudioBaseUrl])
+	}, [selectedProvider, apiConfiguration?.ollamaBaseUrl, apiConfiguration?.lmStudioBaseUrl, apiConfiguration?.clarifaiPat]) // Add clarifaiPat dependency
 	useEffect(() => {
-		if (selectedProvider === "ollama" || selectedProvider === "lmstudio" || selectedProvider === "vscode-lm") {
+		if (
+			selectedProvider === "ollama" ||
+			selectedProvider === "lmstudio" ||
+			selectedProvider === "vscode-lm" ||
+			selectedProvider === "clarifai" // Include Clarifai in effect trigger
+		) {
 			requestLocalModels()
 		}
 	}, [selectedProvider, requestLocalModels])
 	useInterval(
 		requestLocalModels,
-		selectedProvider === "ollama" || selectedProvider === "lmstudio" || selectedProvider === "vscode-lm" ? 2000 : null,
+		selectedProvider === "ollama" ||
+			selectedProvider === "lmstudio" ||
+			selectedProvider === "vscode-lm" ||
+			selectedProvider === "clarifai" // Include Clarifai in interval trigger
+			? 2000
+			: null,
 	)
 
 	const handleMessage = useCallback((event: MessageEvent) => {
@@ -164,6 +185,10 @@ const ApiOptions = ({ showModelOptions, apiErrorMessage, modelIdErrorMessage, is
 			setLmStudioModels(message.lmStudioModels)
 		} else if (message.type === "vsCodeLmModels" && message.vsCodeLmModels) {
 			setVsCodeLmModels(message.vsCodeLmModels)
+		} else if (message.type === "clarifaiModels") {
+			// Handle Clarifai models response
+			console.log("Received clarifaiModels message:", message.clarifaiModels) // <-- Add logging
+			setClarifaiModels(message.clarifaiModels || []) // Ensure it's always an array
 		}
 	}, [])
 	useEvent("message", handleMessage)
@@ -214,6 +239,8 @@ const ApiOptions = ({ showModelOptions, apiErrorMessage, modelIdErrorMessage, is
 						minWidth: 130,
 						position: "relative",
 					}}>
+					<VSCodeOption value="clarifai">Clarifai</VSCodeOption>
+
 					<VSCodeOption value="cline">Cline</VSCodeOption>
 					<VSCodeOption value="openrouter">OpenRouter</VSCodeOption>
 					<VSCodeOption value="anthropic">Anthropic</VSCodeOption>
@@ -1405,6 +1432,37 @@ const ApiOptions = ({ showModelOptions, apiErrorMessage, modelIdErrorMessage, is
 				</div>
 			)}
 
+			{selectedProvider === "clarifai" && (
+				<div>
+					<VSCodeTextField
+						value={apiConfiguration?.clarifaiPat || ""}
+						style={{ width: "100%" }}
+						type="password"
+						onInput={handleInputChange("clarifaiPat")}
+						placeholder="Enter Personal Access Token...">
+						<span style={{ fontWeight: 500 }}>Clarifai PAT</span>
+					</VSCodeTextField>
+					<p
+						style={{
+							fontSize: "12px",
+							marginTop: 3,
+							color: "var(--vscode-descriptionForeground)",
+						}}>
+						This PAT is stored locally and only used to make API requests from this extension.
+						{!apiConfiguration?.clarifaiPat && (
+							<VSCodeLink
+								href="https://clarifai.com/settings/security" // Assuming this is the correct URL
+								style={{
+									display: "inline",
+									fontSize: "inherit",
+								}}>
+								You can generate a Clarifai PAT in your account settings.
+							</VSCodeLink>
+						)}
+					</p>
+				</div>
+			)}
+
 			{selectedProvider === "sambanova" && (
 				<div>
 					<VSCodeTextField
@@ -1512,6 +1570,27 @@ const ApiOptions = ({ showModelOptions, apiErrorMessage, modelIdErrorMessage, is
 							<label htmlFor="model-id">
 								<span style={{ fontWeight: 500 }}>Model</span>
 							</label>
+							{selectedProvider === "clarifai" && ( // Add Clarifai dropdown
+								<VSCodeDropdown
+									id="model-id"
+									value={selectedModelId}
+									onChange={handleInputChange("apiModelId")}
+									style={{ width: "100%" }}>
+									<VSCodeOption value="">Select a model...</VSCodeOption>
+									{clarifaiModels.map((modelId) => (
+										<VSCodeOption
+											key={modelId}
+											value={modelId}
+											style={{
+												whiteSpace: "normal",
+												wordWrap: "break-word",
+												maxWidth: "100%",
+											}}>
+											{modelId}
+										</VSCodeOption>
+									))}
+								</VSCodeDropdown>
+							)}
 							{selectedProvider === "anthropic" && createDropdown(anthropicModels)}
 							{selectedProvider === "bedrock" && createDropdown(bedrockModels)}
 							{selectedProvider === "vertex" && createDropdown(vertexModels)}
@@ -1905,6 +1984,13 @@ export function normalizeApiConfiguration(apiConfiguration?: ApiConfiguration): 
 			return getProviderData(xaiModels, xaiDefaultModelId)
 		case "sambanova":
 			return getProviderData(sambanovaModels, sambanovaDefaultModelId)
+		case "clarifai":
+			// Placeholder: Define actual models and default later
+			return {
+				selectedProvider: provider,
+				selectedModelId: apiConfiguration?.apiModelId || "", // Or a default Clarifai model ID
+				selectedModelInfo: { ...openAiModelInfoSaneDefaults }, // Placeholder info
+			}
 		default:
 			return getProviderData(anthropicModels, anthropicDefaultModelId)
 	}

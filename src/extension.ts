@@ -11,6 +11,9 @@ import { telemetryService } from "./services/telemetry/TelemetryService"
 import { WebviewProvider } from "./core/webview"
 import { createTestServer, shutdownTestServer } from "./services/test/TestServer"
 import { ErrorService } from "./services/error/ErrorService"
+import { buildApiHandler } from "./api" // Added import
+import { ClarifaiHandler } from "./api/providers/clarifai" // Added import
+import { ApiConfiguration } from "./shared/api" // Added import
 
 /*
 Built using https://github.com/microsoft/vscode-webview-ui-toolkit
@@ -412,6 +415,65 @@ export function activate(context: vscode.ExtensionContext) {
 				type: "action",
 				action: "focusChatInput",
 			})
+		}),
+	)
+
+	// Register the listClarifaiModels command handler
+	context.subscriptions.push(
+		vscode.commands.registerCommand("cline.listClarifaiModels", async () => {
+			Logger.log("Command 'cline.listClarifaiModels' triggered.")
+			try {
+				// 1. Get configuration
+				const config = vscode.workspace.getConfiguration("cline")
+				const apiConfig: ApiConfiguration = {
+					apiProvider: config.get("apiProvider") as ApiConfiguration["apiProvider"], // Assuming apiProvider is stored directly
+					clarifaiApiKey: config.get("clarifaiApiKey"),
+					clarifaiApiBaseUrl: config.get("clarifaiApiBaseUrl"),
+					// Add other relevant config options if needed by buildApiHandler
+				}
+
+				// 2. Check provider
+				if (apiConfig.apiProvider !== "clarifai") {
+					vscode.window.showWarningMessage("Please select 'Clarifai' as the API provider in settings to list models.")
+					Logger.log("Clarifai provider not selected.")
+					return
+				}
+
+				if (!apiConfig.clarifaiApiKey) {
+					vscode.window.showErrorMessage("Clarifai API Key is not configured. Please add it in settings.")
+					Logger.log("Clarifai API key missing.")
+					return
+				}
+
+				// 3. Build handler
+				const handler = buildApiHandler(apiConfig)
+
+				// 4. Type check and call listAvailableModels
+				if (handler instanceof ClarifaiHandler) {
+					vscode.window.showInformationMessage("Fetching Clarifai models...")
+					Logger.log("Calling listAvailableModels...")
+					const models = await handler.listAvailableModels() // Use default page/perPage for now
+					Logger.log(`Fetched ${models.length} models.`)
+
+					if (models.length === 0) {
+						vscode.window.showInformationMessage("No models found for your Clarifai account.")
+					} else {
+						// 5. Display results (simple list for now)
+						const modelList = models.map((m) => `- ${m}`).join("\n")
+						// Use showInformationMessage with modal option for better display of potentially long lists
+						vscode.window.showInformationMessage(`Available Clarifai Models:\n${modelList}`, { modal: true })
+					}
+				} else {
+					// This should technically not happen if apiProvider is 'clarifai'
+					Logger.log("Error: Built handler is not an instance of ClarifaiHandler.")
+					vscode.window.showErrorMessage("Internal error: Could not create Clarifai API handler.")
+				}
+			} catch (error) {
+				Logger.log(`Error listing Clarifai models: ${error instanceof Error ? error.message : String(error)}`)
+				vscode.window.showErrorMessage(
+					`Failed to list Clarifai models: ${error instanceof Error ? error.message : "Unknown error"}`,
+				)
+			}
 		}),
 	)
 
