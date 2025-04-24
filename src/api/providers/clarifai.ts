@@ -22,9 +22,35 @@ export class ClarifaiHandler implements ApiHandler {
 	}
 
 	getModel(): { id: string; info: ModelInfo } {
+		const modelId = this.options.apiModelId || "clarifai-default"
+		let modelInfo: ModelInfo = { supportsPromptCache: false }
+
+		switch (modelId) {
+			case "mistralai/completion/models/codestral-22b-instruct":
+				modelInfo.inputPrice = 0.005 * 1_000_000
+				modelInfo.outputPrice = 0
+				modelInfo.contextWindow = 32000
+				break
+			case "deepseek-ai/deepseek-chat/models/deepseek-V2-Chat":
+				modelInfo.inputPrice = 0.004 * 1_000_000
+				modelInfo.outputPrice = 0
+				modelInfo.contextWindow = 128000
+				break
+			case "meta/Llama-3/models/llama-3-70B-Instruct":
+				modelInfo.inputPrice = 0.008 * 1_000_000
+				modelInfo.outputPrice = 0
+				modelInfo.contextWindow = 128000
+				break
+			case "meta/Llama-3/models/llama-3_2-11b-vision-instruct":
+				modelInfo.inputPrice = 0.008 * 1_000_000
+				modelInfo.outputPrice = 0
+				modelInfo.contextWindow = 128000
+				break
+		}
+
 		return {
-			id: this.options.apiModelId || "clarifai-default",
-			info: { supportsPromptCache: false },
+			id: modelId,
+			info: modelInfo,
 		}
 	}
 

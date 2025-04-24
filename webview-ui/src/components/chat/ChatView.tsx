@@ -863,10 +863,30 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 			//    This ensures it takes its natural height when there's space
 			//    but becomes scrollable when the viewport is too small
 			*/}
+
+			<ChatTextArea
+				ref={textAreaRef}
+				inputValue={inputValue}
+				setInputValue={setInputValue}
+				textAreaDisabled={textAreaDisabled}
+				placeholderText={placeholderText}
+				selectedImages={selectedImages}
+				setSelectedImages={setSelectedImages}
+				onSend={() => handleSendMessage(inputValue, selectedImages)}
+				onSelectImages={selectImages}
+				shouldDisableImages={shouldDisableImages}
+				onHeightChange={() => {
+					if (isAtBottom) {
+						scrollToBottomAuto()
+					}
+				}}
+			/>
+
 			{!task && (
 				<AutoApproveMenu
 					style={{
-						marginBottom: -2,
+						fontSize: "10px",
+						// marginBottom: -2,
 						flex: "0 1 auto", // flex-grow: 0, flex-shrink: 1, flex-basis: auto
 						minHeight: 0,
 					}}
@@ -960,23 +980,6 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 					)}
 				</>
 			)}
-			<ChatTextArea
-				ref={textAreaRef}
-				inputValue={inputValue}
-				setInputValue={setInputValue}
-				textAreaDisabled={textAreaDisabled}
-				placeholderText={placeholderText}
-				selectedImages={selectedImages}
-				setSelectedImages={setSelectedImages}
-				onSend={() => handleSendMessage(inputValue, selectedImages)}
-				onSelectImages={selectImages}
-				shouldDisableImages={shouldDisableImages}
-				onHeightChange={() => {
-					if (isAtBottom) {
-						scrollToBottomAuto()
-					}
-				}}
-			/>
 		</div>
 	)
 }

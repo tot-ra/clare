@@ -1026,6 +1026,31 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 
 		return (
 			<div>
+				<ControlsContainer>
+					<div></div>
+					<Tooltip
+						style={{ zIndex: 1000 }}
+						visible={shownTooltipMode !== null}
+						tipText={`In ${shownTooltipMode === "act" ? "Act" : "Plan"}  mode, Cline will ${shownTooltipMode === "act" ? "complete the task immediately" : "gather information to architect a plan"}`}
+						hintText={`Toggle w/ ${metaKeyChar}+Shift+A`}>
+						<SwitchContainer data-testid="mode-switch" disabled={false} onClick={onModeToggle}>
+							<Slider isAct={chatSettings.mode === "act"} isPlan={chatSettings.mode === "plan"} />
+							<SwitchOption
+								isActive={chatSettings.mode === "plan"}
+								onMouseOver={() => setShownTooltipMode("plan")}
+								onMouseLeave={() => setShownTooltipMode(null)}>
+								Plan
+							</SwitchOption>
+							<SwitchOption
+								isActive={chatSettings.mode === "act"}
+								onMouseOver={() => setShownTooltipMode("act")}
+								onMouseLeave={() => setShownTooltipMode(null)}>
+								Act
+							</SwitchOption>
+						</SwitchContainer>
+					</Tooltip>
+					<div></div>
+				</ControlsContainer>
 				<div
 					style={{
 						padding: "10px 15px",
@@ -1254,27 +1279,6 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 							)}
 						</ModelContainer>
 					</ButtonGroup>
-					<Tooltip
-						style={{ zIndex: 1000 }}
-						visible={shownTooltipMode !== null}
-						tipText={`In ${shownTooltipMode === "act" ? "Act" : "Plan"}  mode, Cline will ${shownTooltipMode === "act" ? "complete the task immediately" : "gather information to architect a plan"}`}
-						hintText={`Toggle w/ ${metaKeyChar}+Shift+A`}>
-						<SwitchContainer data-testid="mode-switch" disabled={false} onClick={onModeToggle}>
-							<Slider isAct={chatSettings.mode === "act"} isPlan={chatSettings.mode === "plan"} />
-							<SwitchOption
-								isActive={chatSettings.mode === "plan"}
-								onMouseOver={() => setShownTooltipMode("plan")}
-								onMouseLeave={() => setShownTooltipMode(null)}>
-								Plan
-							</SwitchOption>
-							<SwitchOption
-								isActive={chatSettings.mode === "act"}
-								onMouseOver={() => setShownTooltipMode("act")}
-								onMouseLeave={() => setShownTooltipMode(null)}>
-								Act
-							</SwitchOption>
-						</SwitchContainer>
-					</Tooltip>
 				</ControlsContainer>
 			</div>
 		)
