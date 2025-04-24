@@ -18,8 +18,7 @@ export class ClarifaiHandler implements ApiHandler {
 	}
 
 	createMessage(systemPrompt: string, messages: Anthropic.Messages.MessageParam[]): ApiStream {
-		// This should eventually call the stream method with the formatted messages
-		return this.stream(messages, new AbortController().signal) // Using a dummy signal for now
+		return this.stream(systemPrompt, messages, new AbortController().signal)
 	}
 
 	getModel(): { id: string; info: ModelInfo } {
@@ -29,7 +28,7 @@ export class ClarifaiHandler implements ApiHandler {
 		}
 	}
 
-	async *stream(messages: Anthropic.MessageParam[], abortSignal: AbortSignal): ApiStream {
+	async *stream(systemPrompt: string, messages: Anthropic.MessageParam[], abortSignal: AbortSignal): ApiStream {
 		const pat = this.options.clarifaiPat
 		const modelId = this.options.apiModelId
 
@@ -57,52 +56,55 @@ export class ClarifaiHandler implements ApiHandler {
 		const baseUrl = this.options.clarifaiApiBaseUrl || "https://api.clarifai.com"
 		const url = `${baseUrl}/v2/users/${user_id}/apps/${app_id}/models/${model_name}/outputs`
 
-		// Format messages for the Qwen model, including tool calls
-		const formattedMessages = messages
-			.map((msg) => {
-				if (msg.role === "user") {
-					return { role: "user", content: msg.content }
-				} else if (msg.role === "assistant") {
-					// Assuming assistant content can be text or an array of text and tool_use
-					if (Array.isArray(msg.content)) {
-						const content: any[] = []
-						for (const item of msg.content) {
+		// Format the entire message history as a single text string for the Qwen model.
+		// Embed tool calls and results in a text-based format.
+		let inputText = ""
+
+		if (systemPrompt) {
+			inputText += `System: ${systemPrompt}\n\n` // Include system prompt
+		}
+
+		for (const msg of messages) {
+			if (msg.role === "user") {
+				inputText += `User: `
+				if (Array.isArray(msg.content)) {
+					inputText += msg.content
+						.map((item) => {
 							if (item.type === "text") {
-								content.push({ type: "text", text: item.text })
-							} else if (item.type === "tool_use") {
-								// Format tool_use for the model if needed, otherwise include as text
-								// This part might need adjustment based on Qwen's specific tool call format
-								// Casting to any to access id and content, as the exact type is not ToolUseBlockParam
-								const toolUseItem = item as any
-								content.push({
-									type: "text",
-									text: `<tool_use id="${toolUseItem.id}">${toolUseItem.content}</tool_use>`,
-								})
+								return item.text
 							}
-						}
-						return { role: "assistant", content: content }
-					} else {
-						return { role: "assistant", content: [{ type: "text", text: msg.content }] }
-					}
-				} else if (msg.role === "tool") {
-					// Assuming tool results are sent back as user messages with tool_result content
-					// Casting to any to access tool_use_id and content
-					const toolMessage = msg as any
-					return {
-						role: "user",
-						content: [{ type: "tool_result", tool_use_id: toolMessage.tool_use_id, content: toolMessage.content }],
-					}
+							return "" // Ignore other types for now
+						})
+						.join("\n")
+				} else {
+					inputText += msg.content
 				}
-				return null // Should not happen with valid message roles
-			})
-			.filter((msg) => msg !== null)
+				inputText += "\n\n" // Separator between messages
+			} else if (msg.role === "assistant") {
+				inputText += `Assistant: `
+				if (Array.isArray(msg.content)) {
+					inputText += msg.content
+						.map((item) => {
+							if (item.type === "text") {
+								return item.text
+							}
+							return "" // Ignore other types for now
+						})
+						.join("\n")
+				} else {
+					inputText += msg.content
+				}
+				inputText += "\n\n" // Separator between messages
+			}
+			// Role 'tool' messages are handled as part of user messages with type 'tool_result'
+		}
 
 		const requestBody = {
 			inputs: [
 				{
 					data: {
 						text: {
-							raw: JSON.stringify(formattedMessages), // Send formatted messages as JSON string
+							raw: inputText, // Send the formatted input text
 						},
 					},
 				},
@@ -122,10 +124,12 @@ export class ClarifaiHandler implements ApiHandler {
 		console.log(requestBodyTxt)
 
 		try {
+			console.log("making request to url " + url)
 			const response = await axios.post(url, requestBodyTxt, {
 				headers: headers,
 				signal: abortSignal,
 			})
+			console.log("got response")
 			console.log(response)
 
 			Logger.info(`Clarifai Response Status: ${response.status}`)
@@ -170,48 +174,54 @@ export class ClarifaiHandler implements ApiHandler {
 	}
 
 	private async *parseClarifaiOutput(outputText: string): AsyncGenerator<ApiStreamChunk, void, unknown> {
-		const blockRegex = /<(task|environment_details|tool_code|tool_use|thinking)>(.*?)<\/\1>/gs
+		// Regex to find blocks like <tag>...</tag> or tool_code/tool_result blocks
+		// Refined regex to be more robust to whitespace and optional language identifiers
+		const blockRegex =
+			/<(task|environment_details|thinking)>(.*?)<\/\1>|tool_code\s*```(?:\w+)?\s*\n(.*?)\s*```|tool_result\s*```(?:\w+)?\s*\n(.*?)\s*```/gs
 		let lastIndex = 0
 		let match
 
 		while ((match = blockRegex.exec(outputText)) !== null) {
 			const fullMatch = match[0]
-			const tag = match[1]
-			const content = match[2].trim()
+			const tag = match[1] // For <tag>...</tag>
+			const tagContent = match[2] // Content for <tag>...</tag>
+			const toolCodeContent = match[3] // Content for tool_code block
+			const toolResultContent = match[4] // Content for tool_result block
 			const startIndex = match.index
 
 			if (startIndex > lastIndex) {
 				yield { type: "text", text: outputText.substring(lastIndex, startIndex) }
 			}
 
-			switch (tag) {
-				case "task":
-				case "environment_details":
-				case "thinking":
-					yield { type: "text", text: fullMatch }
-					break
-				case "tool_code":
-					yield { type: "tool_code", tool_code: content }
-					break
-				case "tool_use":
-					try {
-						// Use xml2js to parse the tool_use content
-						const result: any = await parseStringPromise(`<root>${content}</root>`, {
-							explicitArray: false,
-							strict: false,
-						})
-						const toolName = Object.keys(result.root)[0]
-						const toolContent = result.root[toolName]
-						const toolUseId = `tool_use_${this.toolUseIdCounter++}` // Generate a unique ID
-						yield { type: "tool_use", name: toolName, content: JSON.stringify(toolContent), id: toolUseId }
-					} catch (e: any) {
-						Logger.error(`Failed to parse tool_use content with xml2js: ${content}`, e)
+			if (tag) {
+				// Handle <task>, <environment_details>, <thinking> tags
+				switch (tag) {
+					case "task":
+					case "environment_details":
+					case "thinking":
 						yield { type: "text", text: fullMatch }
-					}
-					break
-				default:
-					yield { type: "text", text: fullMatch }
-					break
+						break
+					default:
+						yield { type: "text", text: fullMatch }
+						break
+				}
+			} else if (toolCodeContent !== undefined) {
+				// Handle tool_code block
+				try {
+					const toolCall = JSON.parse(toolCodeContent.trim())
+					// Assuming the JSON structure is { "tool_name": "...", "parameters": { ... } }
+					const toolName = toolCall.tool_name
+					const toolContent = JSON.stringify(toolCall.parameters)
+					const toolUseId = `tool_use_${this.toolUseIdCounter++}` // Generate a unique ID
+					yield { type: "tool_use", name: toolName, content: toolContent, id: toolUseId }
+				} catch (e: any) {
+					Logger.error(`Failed to parse tool_code JSON content: ${toolCodeContent}`, e)
+					yield { type: "text", text: fullMatch } // Yield as text if parsing fails
+				}
+			} else if (toolResultContent !== undefined) {
+				// Handle tool_result block - currently just yield as text as we don't process these incoming
+				// from the model, only send them to the model.
+				yield { type: "text", text: fullMatch }
 			}
 
 			lastIndex = blockRegex.lastIndex
@@ -233,7 +243,9 @@ export class ClarifaiHandler implements ApiHandler {
 		Logger.info("Clarifai listModels called")
 
 		// Returning hardcoded model ID as requested, pending full REST API implementation
-		const model_id = "qwen/qwenCoder/models/Qwen2_5-Coder-7B-Instruct-vllm"
+		//const model_id = "qwen/qwen-VL/models/Qwen2_5-VL-7B-Instruct"
+		// const model_id="openai/chat-completion/models/o4-mini"
+		const model_id = "deepseek-ai/deepseek-chat/models/deepseek-V2-Chat"
 		Logger.info(`Returning hardcoded model: ${model_id}`)
 		return [model_id]
 	}
