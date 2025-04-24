@@ -53,6 +53,16 @@ Thanks to [Claude 3.7 Sonnet's agentic coding capabilities](https://www.anthrop
 
 Cline supports API providers like OpenRouter, Anthropic, OpenAI, Google Gemini, AWS Bedrock, Azure, GCP Vertex, and Clarifai. You can also configure any OpenAI compatible API, or use a local model through LM Studio/Ollama. If you're using OpenRouter, the extension fetches their latest model list, allowing you to use the newest models as soon as they're available.
 
+### API Providers
+
+Cline's architecture supports multiple API providers through a modular system. Each provider is implemented to handle communication with a specific AI model API and transform the responses into a standardized `ApiStream` format that Cline can process.
+
+- **AnthropicHandler**: Utilizes the official Anthropic SDK and is designed to handle streaming responses and various content block types (text, reasoning, usage) from Anthropic models, including support for features like prompt caching.
+- **OpenRouterHandler**: Integrates with the OpenRouter API, using the OpenAI SDK pointed to the OpenRouter base URL. It handles streaming responses, extracts content and reasoning, and includes logic for fetching usage details.
+- **ClarifaiHandler**: Communicates with the Clarifai API using `axios`. Initially, it was designed to extract raw text output. However, it has been recently updated to parse the output text for internal Cline format/tasks blocks (like `<task>`, `<environment_details>`, `<tool_code>`, `<tool_use>`, `<thinking>`) and yield them as appropriate `ApiStream` chunks. This enhancement allows Cline to correctly interpret structured responses from Clarifai models that may include tool use or thinking processes.
+
+This modular approach allows for easy integration of new API providers and ensures that Cline can work with a wide range of AI models, leveraging their specific capabilities while maintaining a consistent internal processing flow.
+
 
 <!-- Transparent pixel to create line break after floating image -->
 

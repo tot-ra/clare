@@ -82,6 +82,7 @@ export interface ApiHandlerOptions {
 	clarifaiPat?: string // Added Clarifai PAT
 	clarifaiApiKey?: string // Keeping this for potential future use or if PAT isn't the only auth method
 	clarifaiApiBaseUrl?: string
+	clarifaiModelVersionId?: string
 }
 
 export type ApiConfiguration = ApiHandlerOptions & {
