@@ -1200,7 +1200,7 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 									}
 								}}
 								style={{ fontSize: 15 }}>
-								DO IT
+								WORK
 							</VSCodeButton>
 						</div>
 					</div>
@@ -1242,10 +1242,10 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 								{/* {showButtonText && <span style={{ fontSize: "10px" }}>Images</span>} */}
 							</ButtonContainer>
 						</VSCodeButton>
-						<ServersToggleModal />
+						{/* <ServersToggleModal /> */}
 						<ClineRulesToggleModal />
 
-						<ModelContainer ref={modelSelectorRef}>
+						{/* <ModelContainer ref={modelSelectorRef}>
 							<ModelButtonWrapper ref={buttonRef}>
 								<ModelDisplayButton
 									role="button"
@@ -1277,7 +1277,7 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 									/>
 								</ModelSelectorTooltip>
 							)}
-						</ModelContainer>
+						</ModelContainer> */}
 					</ButtonGroup>
 				</ControlsContainer>
 			</div>

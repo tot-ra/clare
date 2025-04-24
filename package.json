@@ -96,11 +96,6 @@
 				"icon": "$(link-external)"
 			},
 			{
-				"command": "cline.accountButtonClicked",
-				"title": "Account",
-				"icon": "$(account)"
-			},
-			{
 				"command": "cline.settingsButtonClicked",
 				"title": "Settings",
 				"icon": "$(settings-gear)"
@@ -165,21 +160,6 @@
 					"when": "view == claude-dev.SidebarProvider"
 				},
 				{
-					"command": "cline.historyButtonClicked",
-					"group": "navigation@3",
-					"when": "view == claude-dev.SidebarProvider"
-				},
-				{
-					"command": "cline.popoutButtonClicked",
-					"group": "navigation@4",
-					"when": "view == claude-dev.SidebarProvider"
-				},
-				{
-					"command": "cline.accountButtonClicked",
-					"group": "navigation@5",
-					"when": "view == claude-dev.SidebarProvider"
-				},
-				{
 					"command": "cline.settingsButtonClicked",
 					"group": "navigation@6",
 					"when": "view == claude-dev.SidebarProvider"
@@ -194,21 +174,6 @@
 				{
 					"command": "cline.mcpButtonClicked",
 					"group": "navigation@2",
-					"when": "activeWebviewPanelId == claude-dev.TabPanelProvider"
-				},
-				{
-					"command": "cline.historyButtonClicked",
-					"group": "navigation@3",
-					"when": "activeWebviewPanelId == claude-dev.TabPanelProvider"
-				},
-				{
-					"command": "cline.popoutButtonClicked",
-					"group": "navigation@4",
-					"when": "activeWebviewPanelId == claude-dev.TabPanelProvider"
-				},
-				{
-					"command": "cline.accountButtonClicked",
-					"group": "navigation@5",
 					"when": "activeWebviewPanelId == claude-dev.TabPanelProvider"
 				},
 				{

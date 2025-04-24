@@ -15,7 +15,7 @@ type McpViewProps = {
 
 const McpConfigurationView = ({ onDone, initialTab }: McpViewProps) => {
 	const { mcpMarketplaceEnabled } = useExtensionState()
-	const [activeTab, setActiveTab] = useState<McpViewTab>(initialTab || (mcpMarketplaceEnabled ? "marketplace" : "installed"))
+	const [activeTab, setActiveTab] = useState<McpViewTab>(initialTab || "installed")
 
 	const handleTabChange = (tab: McpViewTab) => {
 		setActiveTab(tab)
@@ -66,24 +66,24 @@ const McpConfigurationView = ({ onDone, initialTab }: McpViewProps) => {
 						padding: "0 20px 0 20px",
 						borderBottom: "1px solid var(--vscode-panel-border)",
 					}}>
+					<TabButton isActive={activeTab === "installed"} onClick={() => handleTabChange("installed")}>
+						Installed
+					</TabButton>
+					<TabButton isActive={activeTab === "addRemote"} onClick={() => handleTabChange("addRemote")}>
+						Remote Servers
+					</TabButton>
 					{mcpMarketplaceEnabled && (
 						<TabButton isActive={activeTab === "marketplace"} onClick={() => handleTabChange("marketplace")}>
 							Marketplace
 						</TabButton>
 					)}
-					<TabButton isActive={activeTab === "addRemote"} onClick={() => handleTabChange("addRemote")}>
-						Remote Servers
-					</TabButton>
-					<TabButton isActive={activeTab === "installed"} onClick={() => handleTabChange("installed")}>
-						Installed
-					</TabButton>
 				</div>
 
 				{/* Content container */}
 				<div style={{ width: "100%" }}>
+					{activeTab === "installed" && <InstalledServersView />}
 					{mcpMarketplaceEnabled && activeTab === "marketplace" && <McpMarketplaceView />}
 					{activeTab === "addRemote" && <AddRemoteServerForm onServerAdded={() => handleTabChange("installed")} />}
-					{activeTab === "installed" && <InstalledServersView />}
 				</div>
 			</div>
 		</div>

@@ -28,22 +28,22 @@ export class ClarifaiHandler implements ApiHandler {
 		switch (modelId) {
 			case "mistralai/completion/models/codestral-22b-instruct":
 				modelInfo.inputPrice = 0.005 * 1_000_000
-				modelInfo.outputPrice = 0
+				modelInfo.outputPrice = modelInfo.inputPrice
 				modelInfo.contextWindow = 32000
 				break
 			case "deepseek-ai/deepseek-chat/models/deepseek-V2-Chat":
 				modelInfo.inputPrice = 0.004 * 1_000_000
-				modelInfo.outputPrice = 0
+				modelInfo.outputPrice = modelInfo.inputPrice
 				modelInfo.contextWindow = 128000
 				break
 			case "meta/Llama-3/models/llama-3-70B-Instruct":
 				modelInfo.inputPrice = 0.008 * 1_000_000
-				modelInfo.outputPrice = 0
+				modelInfo.outputPrice = modelInfo.inputPrice
 				modelInfo.contextWindow = 128000
 				break
 			case "meta/Llama-3/models/llama-3_2-11b-vision-instruct":
 				modelInfo.inputPrice = 0.008 * 1_000_000
-				modelInfo.outputPrice = 0
+				modelInfo.outputPrice = modelInfo.inputPrice
 				modelInfo.contextWindow = 128000
 				break
 		}
