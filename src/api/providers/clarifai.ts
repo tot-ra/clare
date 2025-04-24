@@ -42,10 +42,10 @@ export class ClarifaiHandler implements ApiHandler {
 
 		// Construct the API endpoint URL
 		// Using the specific model and version provided in the task description
-		const user_id = "meta"
-		const app_id = "Llama-4"
-		const model_name = "Llama-4-Scout-17B-16E-Instruct"
-		const version_id = "74ea99e833e04fd98ee79abe4e1d7156"
+		const user_id = "qwen"
+		const app_id = "qwenCoder"
+		const model_name = "Qwen2_5-Coder-7B-Instruct-vllm"
+		const version_id = "045f032cd56c4be8b06972b04e7d2b81" // Optional: defaults to latest if omitted
 		const baseUrl = this.options.clarifaiApiBaseUrl || "https://api.clarifai.com"
 		const url = `${baseUrl}/v2/users/${user_id}/apps/${app_id}/models/${model_name}/versions/${version_id}/outputs`
 
@@ -134,7 +134,7 @@ export class ClarifaiHandler implements ApiHandler {
 		Logger.info("Clarifai listModels called")
 
 		// Returning hardcoded model ID as requested, pending full REST API implementation
-		const model_id = "meta/Llama-4/models/Llama-4-Scout-17B-16E-Instruct"
+		const model_id = "qwen/qwenCoder/models/Qwen2_5-Coder-7B-Instruct-vllm"
 		Logger.info(`Returning hardcoded model: ${model_id}`)
 		return [model_id]
 	}
