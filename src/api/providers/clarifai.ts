@@ -243,10 +243,12 @@ export class ClarifaiHandler implements ApiHandler {
 		Logger.info("Clarifai listModels called")
 
 		// Returning hardcoded model ID as requested, pending full REST API implementation
-		//const model_id = "qwen/qwen-VL/models/Qwen2_5-VL-7B-Instruct"
-		// const model_id="openai/chat-completion/models/o4-mini"
-		const model_id = "deepseek-ai/deepseek-chat/models/deepseek-V2-Chat"
-		Logger.info(`Returning hardcoded model: ${model_id}`)
-		return [model_id]
+
+		return [
+			"deepseek-ai/deepseek-chat/models/deepseek-V2-Chat",
+			"mistralai/completion/models/codestral-22b-instruct",
+			"meta/Llama-3/models/llama-3-70B-Instruct",
+			"meta/Llama-3/models/llama-3_2-11b-vision-instruct",
+		]
 	}
 }
