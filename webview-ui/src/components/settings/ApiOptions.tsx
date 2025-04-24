@@ -1696,7 +1696,7 @@ const ApiOptions = ({ showModelOptions, apiErrorMessage, modelIdErrorMessage, is
 }
 
 export function getOpenRouterAuthUrl(uriScheme?: string) {
-	return `https://openrouter.ai/auth?callback_url=${uriScheme || "vscode"}://saoudrizwan.claude-dev/openrouter`
+	return `https://openrouter.ai/auth?callback_url=${uriScheme || "vscode"}://tot-ra.clarifai-agent/openrouter`
 }
 
 export const formatPrice = (price: number) => {

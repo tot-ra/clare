@@ -65,7 +65,7 @@ export const ClineAccountInfoCard = () => {
 				// </div>
 				<div>
 					<VSCodeButton onClick={handleLogin} className="mt-0">
-						Sign Up with Cline
+						Sign Up with Clarifai
 					</VSCodeButton>
 				</div>
 			)}

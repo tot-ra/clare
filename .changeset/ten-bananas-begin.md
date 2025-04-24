@@ -1,5 +1,5 @@
 ---
-"claude-dev": patch
+"clarifai-agent": patch
 ---
 
 Readme update
