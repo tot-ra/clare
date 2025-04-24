@@ -1144,7 +1144,7 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 							display: "flex",
 							alignItems: "flex-center",
 							height: textAreaBaseHeight || 31,
-							bottom: 9.5, // should be 10 but doesn't good on mac
+							top: 30, // should be 10 but doesn't good on mac
 							zIndex: 2,
 						}}>
 						<div
@@ -1165,16 +1165,18 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 									fontSize: 16.5,
 								}}
 							/> */}
-							<div
+							<VSCodeButton
 								data-testid="send-button"
-								className={`input-icon-button ${textAreaDisabled ? "disabled" : ""} codicon codicon-send`}
+								disabled={textAreaDisabled}
 								onClick={() => {
 									if (!textAreaDisabled) {
 										setIsTextAreaFocused(false)
 										onSend()
 									}
 								}}
-								style={{ fontSize: 15 }}></div>
+								style={{ fontSize: 15 }}>
+								DO IT
+							</VSCodeButton>
 						</div>
 					</div>
 				</div>
