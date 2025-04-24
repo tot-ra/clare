@@ -864,35 +864,6 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 			//    but becomes scrollable when the viewport is too small
 			*/}
 
-			<ChatTextArea
-				ref={textAreaRef}
-				inputValue={inputValue}
-				setInputValue={setInputValue}
-				textAreaDisabled={textAreaDisabled}
-				placeholderText={placeholderText}
-				selectedImages={selectedImages}
-				setSelectedImages={setSelectedImages}
-				onSend={() => handleSendMessage(inputValue, selectedImages)}
-				onSelectImages={selectImages}
-				shouldDisableImages={shouldDisableImages}
-				onHeightChange={() => {
-					if (isAtBottom) {
-						scrollToBottomAuto()
-					}
-				}}
-			/>
-
-			{!task && (
-				<AutoApproveMenu
-					style={{
-						fontSize: "10px",
-						// marginBottom: -2,
-						flex: "0 1 auto", // flex-grow: 0, flex-shrink: 1, flex-basis: auto
-						minHeight: 0,
-					}}
-				/>
-			)}
-
 			{task && (
 				<>
 					<div style={{ flexGrow: 1, display: "flex" }} ref={scrollContainerRef}>
@@ -925,7 +896,7 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 							initialTopMostItemIndex={groupedMessages.length - 1}
 						/>
 					</div>
-					<AutoApproveMenu />
+
 					{showScrollToBottom ? (
 						<div
 							style={{
@@ -980,6 +951,33 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 					)}
 				</>
 			)}
+
+			<ChatTextArea
+				ref={textAreaRef}
+				inputValue={inputValue}
+				setInputValue={setInputValue}
+				textAreaDisabled={textAreaDisabled}
+				placeholderText={placeholderText}
+				selectedImages={selectedImages}
+				setSelectedImages={setSelectedImages}
+				onSend={() => handleSendMessage(inputValue, selectedImages)}
+				onSelectImages={selectImages}
+				shouldDisableImages={shouldDisableImages}
+				onHeightChange={() => {
+					if (isAtBottom) {
+						scrollToBottomAuto()
+					}
+				}}
+			/>
+
+			<AutoApproveMenu
+				style={{
+					fontSize: "10px",
+					// marginBottom: -2,
+					flex: "0 1 auto", // flex-grow: 0, flex-shrink: 1, flex-basis: auto
+					minHeight: 0,
+				}}
+			/>
 		</div>
 	)
 }

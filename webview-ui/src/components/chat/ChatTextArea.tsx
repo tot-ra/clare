@@ -1025,7 +1025,7 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 		}
 
 		return (
-			<div>
+			<div style={{ marginTop: 20 }}>
 				<ControlsContainer>
 					<div></div>
 					<Tooltip
@@ -1051,6 +1051,7 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 					</Tooltip>
 					<div></div>
 				</ControlsContainer>
+
 				<div
 					style={{
 						padding: "10px 15px",
