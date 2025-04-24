@@ -2,7 +2,7 @@ import { Anthropic } from "@anthropic-ai/sdk"
 import { ApiHandlerOptions } from "../../shared/api"
 import axios from "axios" // Import axios
 import { ApiHandler } from "../index"
-import { ApiStream } from "../transform/stream"
+import { ApiStream, ApiStreamChunk } from "../transform/stream" // Import ApiStreamChunk
 import { Logger } from "../../services/logging/Logger"
 import { ModelInfo } from "../../shared/api"
 
@@ -89,11 +89,24 @@ export class ClarifaiHandler implements ApiHandler {
 			// Log the full raw response data for detailed inspection
 			Logger.info(`Clarifai Raw Response Data: ${JSON.stringify(response.data, null, 2)}`)
 
-			// Check for successful response and extract text
-			if (response.status === 200 && response.data?.outputs?.[0]?.data?.text?.raw) {
-				const outputText = response.data.outputs[0].data.text.raw
-				Logger.info(`Extracted Output Text: ${outputText}`)
-				yield { type: "text", text: outputText }
+			// Check for successful response and extract text from all outputs
+			if (response.status === 200 && response.data?.outputs?.length > 0) {
+				let fullOutputText = ""
+				for (const output of response.data.outputs) {
+					if (output?.data?.text?.raw) {
+						fullOutputText += output.data.text.raw + "\n" // Concatenate text from all outputs
+					}
+				}
+
+				if (fullOutputText.length > 0) {
+					Logger.info(`Extracted Full Output Text: ${fullOutputText}`)
+					// Parse the fullOutputText for internal Cline format/tasks blocks
+					yield* this.parseClarifaiOutput(fullOutputText) // Use the new parsing function
+				} else {
+					Logger.warn("Clarifai response was successful but contained no text output.")
+					// Optionally yield a message indicating no output
+					// yield { type: "text", text: "Received a successful response with no text output." };
+				}
 			} else {
 				// Handle potential errors or unexpected response structure
 				const statusDescription = response.data?.status?.description || "Unknown error"
@@ -121,6 +134,59 @@ export class ClarifaiHandler implements ApiHandler {
 
 		// Example of how to yield final usage stats:
 		// yield { type: "usage", usage: { input_tokens: 10, output_tokens: 20 } }
+	}
+
+	// Helper function to parse Clarifai output text for Cline format/tasks blocks
+	private *parseClarifaiOutput(outputText: string): Generator<ApiStreamChunk, void, unknown> {
+		const blockRegex = /<(task|environment_details|tool_code|tool_use|thinking)>(.*?)<\/\1>/gs
+		let lastIndex = 0
+		let match
+
+		while ((match = blockRegex.exec(outputText)) !== null) {
+			const fullMatch = match[0]
+			const tag = match[1]
+			const content = match[2].trim()
+			const startIndex = match.index
+
+			// Yield preceding text if any
+			if (startIndex > lastIndex) {
+				yield { type: "text", text: outputText.substring(lastIndex, startIndex) }
+			}
+
+			// Yield the block content based on tag type
+			switch (tag) {
+				case "task":
+				case "environment_details":
+				case "thinking":
+					yield { type: "text", text: fullMatch } // Yield the full tag and content for these types
+					break
+				case "tool_code":
+					yield { type: "tool_code", tool_code: content }
+					break
+				case "tool_use":
+					// Attempt to parse tool_use content as XML
+					try {
+						// A more robust XML parser might be needed for complex tool_use blocks
+						const toolNameMatch = content.match(/<([^>]+)>/)
+						const toolName = toolNameMatch ? toolNameMatch[1] : "unknown_tool"
+						yield { type: "tool_use", name: toolName, content: content, id: `tool_use_id_${Date.now()}` } // Generate a simple ID
+					} catch (e) {
+						Logger.error(`Failed to parse tool_use content: ${content}`, e)
+						yield { type: "text", text: fullMatch } // Yield as text if parsing fails
+					}
+					break
+				default:
+					yield { type: "text", text: fullMatch } // Yield unrecognized tags as text
+					break
+			}
+
+			lastIndex = blockRegex.lastIndex
+		}
+
+		// Yield any remaining text after the last block
+		if (lastIndex < outputText.length) {
+			yield { type: "text", text: outputText.substring(lastIndex) }
+		}
 	}
 
 	async listAvailableModels(): Promise<string[]> {

@@ -1,5 +1,10 @@
 export type ApiStream = AsyncGenerator<ApiStreamChunk>
-export type ApiStreamChunk = ApiStreamTextChunk | ApiStreamReasoningChunk | ApiStreamUsageChunk
+export type ApiStreamChunk =
+	| ApiStreamTextChunk
+	| ApiStreamReasoningChunk
+	| ApiStreamUsageChunk
+	| ApiStreamToolCodeChunk // Added tool_code chunk type
+	| ApiStreamToolUseChunk // Added tool_use chunk type
 
 export interface ApiStreamTextChunk {
 	type: "text"
@@ -18,4 +23,18 @@ export interface ApiStreamUsageChunk {
 	cacheWriteTokens?: number
 	cacheReadTokens?: number
 	totalCost?: number // openrouter
+}
+
+// Added interface for tool_code chunks
+export interface ApiStreamToolCodeChunk {
+	type: "tool_code"
+	tool_code: string
+}
+
+// Added interface for tool_use chunks
+export interface ApiStreamToolUseChunk {
+	type: "tool_use"
+	name: string
+	content: string
+	id: string // Assuming tool_use chunks need an ID
 }
