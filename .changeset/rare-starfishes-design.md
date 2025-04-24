@@ -1,5 +1,5 @@
 ---
-"clarifai-agent": patch
+"claude-dev": patch
 ---
 
 Allow user to send context with an option selection

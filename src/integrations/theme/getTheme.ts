@@ -137,5 +137,5 @@ export function mergeJson(
 }
 
 function getExtensionUri(): vscode.Uri {
-	return vscode.extensions.getExtension("tot-ra.clarifai-agent")!.extensionUri
+	return vscode.extensions.getExtension("saoudrizwan.claude-dev")!.extensionUri
 }

@@ -25,7 +25,7 @@ describe("Extension Tests", function () {
 
 	it("should activate extension successfully", async () => {
 		// Get the extension
-		const extension = vscode.extensions.getExtension("tot-ra.clarifai-agent")
+		const extension = vscode.extensions.getExtension("saoudrizwan.claude-dev")
 		expect(extension).to.not.be.undefined
 
 		// Activate the extension if not already activated

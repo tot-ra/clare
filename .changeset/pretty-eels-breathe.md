@@ -1,5 +1,5 @@
 ---
-"clarifai-agent": patch
+"claude-dev": patch
 ---
 
 fix vertexai token count

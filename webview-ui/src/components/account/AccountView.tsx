@@ -161,7 +161,7 @@ export const ClineAccountView = () => {
 					</p>
 
 					<VSCodeButton onClick={handleLogin} className="w-full mb-4">
-						Sign up with Clarifai
+						Sign up with Cline
 					</VSCodeButton>
 
 					<p className="text-[var(--vscode-descriptionForeground)] text-xs text-center m-0">

@@ -1106,7 +1106,7 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 							borderRadius: 2,
 							fontFamily: "var(--vscode-font-family)",
 							fontSize: "var(--vscode-editor-font-size)",
-							lineHeight: "calc( 3 * var(--vscode-editor-line-height) )",
+							lineHeight: "var(--vscode-editor-line-height)",
 							resize: "none",
 							overflowX: "hidden",
 							overflowY: "scroll",
