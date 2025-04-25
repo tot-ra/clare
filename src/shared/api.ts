@@ -1614,12 +1614,12 @@ export const sambanovaModels = {
 // Actual Clarifai pricing needs verification and update.
 export type ClarifaiModelId = keyof typeof clarifaiModels
 // Using Llama 3 70B as default, adjust if needed
-export const clarifaiDefaultModelId: ClarifaiModelId = "meta/Llama-3/models/llama-3-70B-Instruct"
+export const clarifaiDefaultModelId: ClarifaiModelId = "qwen/qwenLM/models/QwQ-32B-AWQ"
 export const clarifaiModels = {
-	"mistralai/completion/models/codestral-22b-instruct": {
-		inputPrice: 0.005 * 1_000_000, // Placeholder price
-		outputPrice: 0.005 * 1_000_000, // Placeholder price
-		contextWindow: 32000,
+	"qwen/qwenLM/models/QwQ-32B-AWQ": {
+		inputPrice: 0.00117 * 1_000_000, // Placeholder price
+		outputPrice: 0.00117 * 1_000_000, // Placeholder price
+		contextWindow: 128000,
 		supportsPromptCache: false, // Assuming false
 		supportsImages: false, // Assuming false
 	},
@@ -1630,20 +1630,46 @@ export const clarifaiModels = {
 		supportsPromptCache: false, // Assuming false
 		supportsImages: false, // Assuming false
 	},
-	"meta/Llama-3/models/llama-3-70B-Instruct": {
-		inputPrice: 0.008 * 1_000_000, // Placeholder price
-		outputPrice: 0.008 * 1_000_000, // Placeholder price
-		contextWindow: 128000,
-		supportsPromptCache: false, // Assuming false
-		supportsImages: false, // Assuming false
-	},
-	"meta/Llama-3/models/llama-3_2-11b-vision-instruct": {
-		inputPrice: 0.008 * 1_000_000, // Placeholder price
-		outputPrice: 0.008 * 1_000_000, // Placeholder price
-		contextWindow: 128000,
-		supportsPromptCache: false, // Assuming false
-		supportsImages: true, // This is a vision model
-	},
+
+	// "meta/Llama-3/models/llama-3_2-11b-vision-instruct": {
+	// 	inputPrice: 0.008 * 1_000_000, // Placeholder price
+	// 	outputPrice: 0.008 * 1_000_000, // Placeholder price
+	// 	contextWindow: 128000,
+	// 	supportsPromptCache: false, // Assuming false
+	// 	supportsImages: true, // This is a vision model
+	// },
+
+	// "meta/Llama-3/models/llama-3-70B-Instruct": {
+	// 	inputPrice: 0.008 * 1_000_000, // Placeholder price
+	// 	outputPrice: 0.008 * 1_000_000, // Placeholder price
+	// 	contextWindow: 128000,
+	// 	supportsPromptCache: false, // Assuming false
+	// 	supportsImages: false, // Assuming false
+	// },
+
+	// "meta/Llama-3/models/Llama-3_2-3B-Instruct": {
+	// 	inputPrice: 0.008 * 1_000_000, // Placeholder price
+	// 	outputPrice: 0.008 * 1_000_000, // Placeholder price
+	// 	contextWindow: 128000,
+	// 	supportsPromptCache: false, // Assuming false
+	// 	supportsImages: false, // Assuming false
+	// },
+
+	// "mistralai/completion/models/codestral-22b-instruct": {
+	// 	inputPrice: 0.005 * 1_000_000, // Placeholder price
+	// 	outputPrice: 0.005 * 1_000_000, // Placeholder price
+	// 	contextWindow: 32000,
+	// 	supportsPromptCache: false, // Assuming false
+	// 	supportsImages: false, // Assuming false
+	// },
+
+	// "qwen/qwenCoder/models/Qwen2_5-Coder-7B-Instruct-vllm":{
+	// 	inputPrice: 0.00046 * 1_000_000, // Placeholder price
+	// 	outputPrice: 0.00046 * 1_000_000, // Placeholder price
+	// 	contextWindow: 32000,
+	// 	supportsPromptCache: false, // Assuming false
+	// 	supportsImages: false, // Assuming false
+	// },
 } as const satisfies Record<string, ModelInfo>
 
 // Requesty
