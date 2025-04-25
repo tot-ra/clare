@@ -18,7 +18,7 @@ import { useExtensionState } from "@/context/ExtensionStateContext"
 import { findMatchingResourceOrTemplate, getMcpServerDisplayName } from "@/utils/mcp"
 import { vscode } from "@/utils/vscode"
 import { CheckmarkControl } from "@/components/common/CheckmarkControl"
-import { CheckpointControls, CheckpointOverlay } from "../common/CheckpointControls"
+import { CheckpointControls } from "../common/CheckpointControls" // Removed CheckpointOverlay as it's not used directly here
 import CodeAccordian, { cleanPathPrefix } from "../common/CodeAccordian"
 import CodeBlock, { CODE_BLOCK_BG_COLOR } from "@/components/common/CodeBlock"
 import MarkdownBlock from "@/components/common/MarkdownBlock"
@@ -54,6 +54,26 @@ interface ChatRowProps {
 
 interface ChatRowContentProps extends Omit<ChatRowProps, "onHeightChange"> {}
 
+// Moved outside as it doesn't depend on component state/props
+const getIconSpan = (iconName: string, color: string) => (
+	<div
+		style={{
+			width: 16,
+			height: 16,
+			display: "flex",
+			alignItems: "center",
+			justifyContent: "center",
+		}}>
+		<span
+			className={`codicon codicon-${iconName}`}
+			style={{
+				color,
+				fontSize: 16,
+				marginBottom: "-1.5px",
+			}}></span>
+	</div>
+)
+
 export const ProgressIndicator = () => (
 	<div
 		style={{
@@ -83,38 +103,28 @@ const Markdown = memo(({ markdown }: { markdown?: string }) => {
 	)
 })
 
-const ChatRow = memo(
-	(props: ChatRowProps) => {
-		const { isLast, onHeightChange, message, lastModifiedMessage, inputValue } = props
-		// Store the previous height to compare with the current height
-		// This allows us to detect changes without causing re-renders
-		const prevHeightRef = useRef(0)
+const ChatRow = memo((props: ChatRowProps) => {
+	const { isLast, onHeightChange, message } = props // Removed unused vars
+	const prevHeightRef = useRef(0)
 
-		const [chatrow, { height }] = useSize(
-			<ChatRowContainer>
-				<ChatRowContent {...props} />
-			</ChatRowContainer>,
-		)
+	const [chatrow, { height }] = useSize(
+		<ChatRowContainer>
+			<ChatRowContent {...props} />
+		</ChatRowContainer>,
+	)
 
-		useEffect(() => {
-			// used for partials command output etc.
-			// NOTE: it's important we don't distinguish between partial or complete here since our scroll effects in chatview need to handle height change during partial -> complete
-			const isInitialRender = prevHeightRef.current === 0 // prevents scrolling when new element is added since we already scroll for that
-			// height starts off at Infinity
-			if (isLast && height !== 0 && height !== Infinity && height !== prevHeightRef.current) {
-				if (!isInitialRender) {
-					onHeightChange(height > prevHeightRef.current)
-				}
-				prevHeightRef.current = height
+	useEffect(() => {
+		const isInitialRender = prevHeightRef.current === 0
+		if (isLast && height !== 0 && height !== Infinity && height !== prevHeightRef.current) {
+			if (!isInitialRender) {
+				onHeightChange(height > prevHeightRef.current)
 			}
-		}, [height, isLast, onHeightChange, message])
+			prevHeightRef.current = height
+		}
+	}, [height, isLast, onHeightChange, message]) // Added message to dependencies as it affects content height
 
-		// we cannot return null as virtuoso does not support it so we use a separate visibleMessages array to filter out messages that should not be rendered
-		return chatrow
-	},
-	// memo does shallow comparison of props, so we need to do deep comparison of arrays/objects whose properties might change
-	deepEqual,
-)
+	return chatrow
+}, deepEqual)
 
 export default ChatRow
 
@@ -128,20 +138,25 @@ export const ChatRowContent = ({
 }: ChatRowContentProps) => {
 	const { mcpServers, mcpMarketplaceCatalog } = useExtensionState()
 	const [seeNewChangesDisabled, setSeeNewChangesDisabled] = useState(false)
+	const [startTime, setStartTime] = useState<number | null>(null)
+	const [elapsedTime, setElapsedTime] = useState<number | null>(null)
+	const [finalElapsedTime, setFinalElapsedTime] = useState<number | null>(null) // State for final duration
+	const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
 	const [cost, apiReqCancelReason, apiReqStreamingFailedMessage] = useMemo(() => {
 		if (message.text != null && message.say === "api_req_started") {
-			const info: ClineApiReqInfo = JSON.parse(message.text)
-			return [info.cost, info.cancelReason, info.streamingFailedMessage]
+			try {
+				const info: ClineApiReqInfo = JSON.parse(message.text)
+				return [info.cost, info.cancelReason, info.streamingFailedMessage]
+			} catch (e) {
+				console.error("Failed to parse api_req_started text:", message.text, e)
+			}
 		}
 		return [undefined, undefined, undefined]
 	}, [message.text, message.say])
 
-	// when resuming task last won't be api_req_failed but a resume_task message so api_req_started will show loading spinner. that's why we just remove the last api_req_started that failed without streaming anything
 	const apiRequestFailedMessage =
-		isLast && lastModifiedMessage?.ask === "api_req_failed" // if request is retried then the latest message is a api_req_retried
-			? lastModifiedMessage?.text
-			: undefined
+		isLast && lastModifiedMessage?.ask === "api_req_failed" ? lastModifiedMessage?.text : undefined
 
 	const isCommandExecuting =
 		isLast &&
@@ -158,8 +173,8 @@ export const ChatRowContent = ({
 	const cancelledColor = "var(--vscode-descriptionForeground)"
 
 	const handleMessage = useCallback((event: MessageEvent) => {
-		const message: ExtensionMessage = event.data
-		switch (message.type) {
+		const msg: ExtensionMessage = event.data // Renamed to avoid conflict
+		switch (msg.type) {
 			case "relinquishControl": {
 				setSeeNewChangesDisabled(false)
 				break
@@ -169,65 +184,63 @@ export const ChatRowContent = ({
 
 	useEvent("message", handleMessage)
 
-	const [icon, title] = useMemo(() => {
+	// Effect to manage the timer interval
+	useEffect(() => {
+		if (startTime !== null) {
+			if (intervalRef.current) {
+				clearInterval(intervalRef.current)
+			}
+			intervalRef.current = setInterval(() => {
+				setElapsedTime(Date.now() - startTime)
+			}, 100)
+		} else {
+			if (intervalRef.current) {
+				clearInterval(intervalRef.current)
+				intervalRef.current = null
+			}
+			// Don't reset elapsedTime here, let finalElapsedTime hold the value
+			// setElapsedTime(null)
+		}
+		return () => {
+			if (intervalRef.current) {
+				clearInterval(intervalRef.current)
+				intervalRef.current = null
+			}
+		}
+	}, [startTime])
+
+	const [icon, title]: [React.ReactNode, React.ReactNode] = useMemo(() => {
 		switch (type) {
 			case "error":
-				return [
-					<span
-						className="codicon codicon-error"
-						style={{
-							color: errorColor,
-							marginBottom: "-1.5px",
-						}}></span>,
-					<span style={{ color: errorColor, fontWeight: "bold" }}>Error</span>,
-				]
+				return [getIconSpan("error", errorColor), <span style={{ color: errorColor, fontWeight: "bold" }}>Error</span>]
 			case "mistake_limit_reached":
 				return [
-					<span
-						className="codicon codicon-error"
-						style={{
-							color: errorColor,
-							marginBottom: "-1.5px",
-						}}></span>,
+					getIconSpan("error", errorColor),
 					<span style={{ color: errorColor, fontWeight: "bold" }}>Cline is having trouble...</span>,
 				]
 			case "auto_approval_max_req_reached":
 				return [
-					<span
-						className="codicon codicon-warning"
-						style={{
-							color: errorColor,
-							marginBottom: "-1.5px",
-						}}></span>,
+					getIconSpan("warning", errorColor),
 					<span style={{ color: errorColor, fontWeight: "bold" }}>Maximum Requests Reached</span>,
 				]
 			case "command":
 				return [
-					isCommandExecuting ? (
-						<ProgressIndicator />
-					) : (
-						<span
-							className="codicon codicon-terminal"
-							style={{
-								color: normalColor,
-								marginBottom: "-1.5px",
-							}}></span>
-					),
+					isCommandExecuting ? <ProgressIndicator /> : getIconSpan("terminal", normalColor),
 					<span style={{ color: normalColor, fontWeight: "bold" }}>Clare wants to execute this command:</span>,
 				]
-			case "use_mcp_server":
-				const mcpServerUse = JSON.parse(message.text || "{}") as ClineAskUseMcpServer
+			case "use_mcp_server": {
+				let mcpServerUse: ClineAskUseMcpServer | null = null
+				try {
+					mcpServerUse = JSON.parse(message.text || "{}") as ClineAskUseMcpServer
+				} catch (e) {
+					console.error("Failed to parse use_mcp_server text:", message.text, e)
+					return [getIconSpan("error", errorColor), <span>Error parsing MCP request</span>]
+				}
+				if (!mcpServerUse) {
+					return [getIconSpan("error", errorColor), <span>Error parsing MCP request</span>]
+				}
 				return [
-					isMcpServerResponding ? (
-						<ProgressIndicator />
-					) : (
-						<span
-							className="codicon codicon-server"
-							style={{
-								color: normalColor,
-								marginBottom: "-1.5px",
-							}}></span>
-					),
+					isMcpServerResponding ? <ProgressIndicator /> : getIconSpan("server", normalColor),
 					<span style={{ color: normalColor, fontWeight: "bold", wordBreak: "break-word" }}>
 						Clare wants to {mcpServerUse.type === "use_mcp_tool" ? "use a tool" : "access a resource"} on the{" "}
 						<code style={{ wordBreak: "break-all" }}>
@@ -236,70 +249,87 @@ export const ChatRowContent = ({
 						MCP server:
 					</span>,
 				]
+			}
 			case "completion_result":
 				return [
-					<span
-						className="codicon codicon-check"
-						style={{
-							color: successColor,
-							marginBottom: "-1.5px",
-						}}></span>,
+					getIconSpan("check", successColor),
 					<span style={{ color: successColor, fontWeight: "bold" }}>Task Completed</span>,
 				]
-			case "api_req_started":
-				const getIconSpan = (iconName: string, color: string) => (
-					<div
-						style={{
-							width: 16,
-							height: 16,
-							display: "flex",
-							alignItems: "center",
-							justifyContent: "center",
-						}}>
-						<span
-							className={`codicon codicon-${iconName}`}
-							style={{
-								color,
-								fontSize: 16,
-								marginBottom: "-1.5px",
-							}}></span>
-					</div>
-				)
-				return [
-					apiReqCancelReason != null ? (
-						apiReqCancelReason === "user_cancelled" ? (
-							getIconSpan("error", cancelledColor)
+			case "api_req_started": {
+				const isCancelled = apiReqCancelReason != null
+				const isFailed = apiRequestFailedMessage != null || apiReqStreamingFailedMessage != null
+				const isSuccess = cost != null
+				const isLoading = !isCancelled && !isFailed && !isSuccess
+
+				if (isLoading && startTime === null) {
+					setStartTime(Date.now())
+					setFinalElapsedTime(null) // Reset final time when starting
+				} else if (!isLoading && startTime !== null) {
+					// Request finished, capture final time and stop timer
+					if (intervalRef.current) clearInterval(intervalRef.current) // Stop interval immediately
+					intervalRef.current = null
+					setFinalElapsedTime(elapsedTime) // Store the last elapsed time
+					setStartTime(null) // Stop the timer effect
+					// Keep elapsedTime as is for one last render cycle if needed, or set to finalElapsedTime
+					setElapsedTime(elapsedTime) // Or setElapsedTime(finalElapsedTime) if preferred
+				}
+
+				const currentIcon = isCancelled
+					? apiReqCancelReason === "user_cancelled"
+						? getIconSpan("error", cancelledColor)
+						: getIconSpan("error", errorColor)
+					: isSuccess
+						? getIconSpan("check", successColor)
+						: isFailed
+							? getIconSpan("error", errorColor)
+							: ProgressIndicator()
+
+				const currentTitle = (() => {
+					if (isCancelled) {
+						return apiReqCancelReason === "user_cancelled" ? (
+							<span style={{ color: normalColor, fontWeight: "bold" }}>API Request Cancelled</span>
 						) : (
-							getIconSpan("error", errorColor)
+							<span style={{ color: errorColor, fontWeight: "bold" }}>API Streaming Failed</span>
 						)
-					) : cost != null ? (
-						getIconSpan("check", successColor)
-					) : apiRequestFailedMessage ? (
-						getIconSpan("error", errorColor)
-					) : (
-						<ProgressIndicator />
-					),
-					(() => {
-						if (apiReqCancelReason != null) {
-							return apiReqCancelReason === "user_cancelled" ? (
-								<span style={{ color: normalColor, fontWeight: "bold" }}>API Request Cancelled</span>
-							) : (
-								<span style={{ color: errorColor, fontWeight: "bold" }}>API Streaming Failed</span>
-							)
-						}
+					}
+					if (isSuccess) {
+						return <span style={{ color: normalColor, fontWeight: "bold" }}>API Request</span>
+					}
+					if (isFailed) {
+						return <span style={{ color: errorColor, fontWeight: "bold" }}>API Request Failed</span>
+					}
+					// isLoading or showing final time
+					const displayTime = isLoading ? elapsedTime : finalElapsedTime
+					const timeString = displayTime !== null ? ` (${(displayTime / 1000).toFixed(3)}s)` : ""
 
-						if (cost != null) {
-							return <span style={{ color: normalColor, fontWeight: "bold" }}>API Request</span>
-						}
+					// Title logic: Show "..." only while loading. Otherwise show final status.
+					// The time string will be rendered separately in the JSX below.
+					if (isLoading) {
+						return (
+							<span style={{ color: normalColor, fontWeight: "bold" }}>
+								API Request...
+								{timeString}
+							</span>
+						)
+					} else if (isSuccess) {
+						return <span style={{ color: normalColor, fontWeight: "bold" }}>API Request</span>
+					} else if (isFailed) {
+						return <span style={{ color: errorColor, fontWeight: "bold" }}>API Request Failed</span>
+					} else if (isCancelled) {
+						return apiReqCancelReason === "user_cancelled" ? (
+							<span style={{ color: normalColor, fontWeight: "bold" }}>API Request Cancelled</span>
+						) : (
+							<span style={{ color: errorColor, fontWeight: "bold" }}>API Streaming Failed</span>
+						)
+					}
+					// Fallback - should ideally not be reached if logic is correct
+					return <span style={{ color: normalColor, fontWeight: "bold" }}>API Request</span>
+				})() // End of currentTitle calculation
 
-						if (apiRequestFailedMessage) {
-							return <span style={{ color: errorColor, fontWeight: "bold" }}>API Request Failed</span>
-						}
-
-						return <span style={{ color: normalColor, fontWeight: "bold" }}>API Request...</span>
-					})(),
-				]
-			case "followup":
+				// Return the icon and the calculated title
+				return [currentIcon, currentTitle]
+			}
+			case "followup": {
 				return [
 					<span
 						className="codicon"
@@ -311,10 +341,30 @@ export const ChatRowContent = ({
 					</span>,
 					<span style={{ color: normalColor, fontWeight: "bold" }}>Clare has a question:</span>,
 				]
+			}
 			default:
 				return [null, null]
 		}
-	}, [type, cost, apiRequestFailedMessage, isCommandExecuting, apiReqCancelReason, isMcpServerResponding, message.text])
+	}, [
+		type,
+		cost,
+		apiRequestFailedMessage,
+		isCommandExecuting,
+		apiReqCancelReason,
+		isMcpServerResponding,
+		message.text,
+		startTime,
+		elapsedTime,
+		finalElapsedTime,
+		apiReqStreamingFailedMessage,
+		mcpMarketplaceCatalog,
+		normalColor,
+		errorColor,
+		successColor,
+		cancelledColor,
+		setStartTime,
+		setFinalElapsedTime, // Add setFinalElapsedTime dependency
+	])
 
 	const headerStyle: React.CSSProperties = {
 		display: "flex",
@@ -332,7 +382,12 @@ export const ChatRowContent = ({
 
 	const tool = useMemo(() => {
 		if (message.ask === "tool" || message.say === "tool") {
-			return JSON.parse(message.text || "{}") as ClineSayTool
+			try {
+				return JSON.parse(message.text || "{}") as ClineSayTool
+			} catch (e) {
+				console.error("Failed to parse tool text:", message.text, e)
+				return null // Return null if parsing fails
+			}
 		}
 		return null
 	}, [message.ask, message.say, message.text])
@@ -398,10 +453,7 @@ export const ChatRowContent = ({
 							{toolIcon("file-code")}
 							{!tool.operationIsLocatedInWorkspace &&
 								toolIcon("sign-out", "yellow", -90, "This file is outside of your workspace")}
-							<span style={{ fontWeight: "bold" }}>
-								{/* {message.type === "ask" ? "" : "Cline read this file:"} */}
-								Clare wants to read this file:
-							</span>
+							<span style={{ fontWeight: "bold" }}>Clare wants to read this file:</span>
 						</div>
 						<div
 							style={{
@@ -425,7 +477,7 @@ export const ChatRowContent = ({
 								onClick={() => {
 									vscode.postMessage({
 										type: "openFile",
-										text: tool.content,
+										text: tool.path, // Pass path to open
 									})
 								}}>
 								{tool.path?.startsWith(".") && <span>.</span>}
@@ -629,8 +681,32 @@ export const ChatRowContent = ({
 	}
 
 	if (message.ask === "use_mcp_server" || message.say === "use_mcp_server") {
-		const useMcpServer = JSON.parse(message.text || "{}") as ClineAskUseMcpServer
-		const server = mcpServers.find((server) => server.name === useMcpServer.serverName)
+		let useMcpServer: ClineAskUseMcpServer | null = null
+		let server: ReturnType<typeof useExtensionState>["mcpServers"][number] | undefined = undefined
+		try {
+			useMcpServer = JSON.parse(message.text || "{}") as ClineAskUseMcpServer
+			if (useMcpServer?.serverName) {
+				server = mcpServers.find((s) => s.name === useMcpServer!.serverName)
+			}
+		} catch (e) {
+			console.error("Failed to parse use_mcp_server text:", message.text, e)
+			return (
+				<div style={{ color: errorColor }}>
+					<span className="codicon codicon-error" style={{ marginRight: 5 }}></span>
+					Error displaying MCP request details.
+				</div>
+			)
+		}
+
+		if (!useMcpServer) {
+			return (
+				<div style={{ color: errorColor }}>
+					<span className="codicon codicon-error" style={{ marginRight: 5 }}></span>
+					Error displaying MCP request details.
+				</div>
+			)
+		}
+
 		return (
 			<>
 				<div style={headerStyle}>
@@ -703,6 +779,11 @@ export const ChatRowContent = ({
 		)
 	}
 
+	// Determine if the request is finished for rendering the final time
+	const isApiReqFinished =
+		message.say === "api_req_started" &&
+		(cost != null || apiReqCancelReason != null || apiRequestFailedMessage != null || apiReqStreamingFailedMessage != null)
+
 	switch (message.type) {
 		case "say":
 			switch (message.say) {
@@ -730,10 +811,16 @@ export const ChatRowContent = ({
 									}}>
 									{icon}
 									{title}
-									{/* Need to render this every time since it affects height of row by 2px */}
+									{/* Render final time separately if finished */}
+									{isApiReqFinished && finalElapsedTime !== null && (
+										<span style={{ color: normalColor, fontWeight: "normal", marginLeft: "4px" }}>
+											({(finalElapsedTime / 1000).toFixed(3)}s)
+										</span>
+									)}
 									<VSCodeBadge
 										style={{
 											opacity: cost != null && cost > 0 ? 1 : 0,
+											marginLeft: isApiReqFinished && finalElapsedTime !== null ? "auto" : undefined, // Adjust margin if time is shown
 										}}>
 										${Number(cost || 0)?.toFixed(4)}
 									</VSCodeBadge>
@@ -743,7 +830,6 @@ export const ChatRowContent = ({
 							{((cost == null && apiRequestFailedMessage) || apiReqStreamingFailedMessage) && (
 								<>
 									{(() => {
-										// Try to parse the error message as JSON for credit limit error
 										const errorData = parseErrorText(apiRequestFailedMessage)
 										if (errorData) {
 											if (
@@ -763,8 +849,6 @@ export const ChatRowContent = ({
 												)
 											}
 										}
-
-										// Default error display
 										return (
 											<p
 												style={{
@@ -793,21 +877,21 @@ export const ChatRowContent = ({
 									})()}
 								</>
 							)}
-
-							{isExpanded && (
-								<div style={{ marginTop: "10px" }}>
-									<CodeAccordian
-										code={JSON.parse(message.text || "{}").request}
-										language="markdown"
-										isExpanded={true}
-										onToggleExpand={onToggleExpand}
-									/>
-								</div>
-							)}
+							{isExpanded &&
+								message.text && ( // Added check for message.text
+									<div style={{ marginTop: "10px" }}>
+										<CodeAccordian
+											code={JSON.parse(message.text || "{}").request} // Added fallback for parse
+											language="markdown"
+											isExpanded={true}
+											onToggleExpand={onToggleExpand}
+										/>
+									</div>
+								)}
 						</>
 					)
 				case "api_req_finished":
-					return null // we should never see this message type
+					return null
 				case "mcp_server_response":
 					return <McpResponseDisplay responseText={message.text || ""} />
 				case "text":
@@ -823,10 +907,8 @@ export const ChatRowContent = ({
 								<div
 									onClick={onToggleExpand}
 									style={{
-										// marginBottom: 15,
 										cursor: "pointer",
 										color: "var(--vscode-descriptionForeground)",
-
 										fontStyle: "italic",
 										overflow: "hidden",
 									}}>
@@ -889,8 +971,9 @@ export const ChatRowContent = ({
 							)}
 						</div>
 					)
-				case "user_feedback_diff":
-					const tool = JSON.parse(message.text || "{}") as ClineSayTool
+				case "user_feedback_diff": {
+					// Added block scope
+					const feedbackTool = JSON.parse(message.text || "{}") as ClineSayTool // Renamed variable
 					return (
 						<div
 							style={{
@@ -898,13 +981,14 @@ export const ChatRowContent = ({
 								width: "100%",
 							}}>
 							<CodeAccordian
-								diff={tool.diff!}
+								diff={feedbackTool.diff!} // Use renamed variable
 								isFeedback={true}
 								isExpanded={isExpanded}
 								onToggleExpand={onToggleExpand}
 							/>
 						</div>
 					)
+				}
 				case "error":
 					return (
 						<>
@@ -1018,7 +1102,8 @@ export const ChatRowContent = ({
 							Loading MCP documentation
 						</div>
 					)
-				case "completion_result":
+				case "completion_result": {
+					// Added block scope
 					const hasChanges = message.text?.endsWith(COMPLETION_RESULT_CHANGES_FLAG) ?? false
 					const text = hasChanges ? message.text?.slice(0, -COMPLETION_RESULT_CHANGES_FLAG.length) : message.text
 					return (
@@ -1071,6 +1156,7 @@ export const ChatRowContent = ({
 							)}
 						</>
 					)
+				}
 				case "shell_integration_warning":
 					return (
 						<>
@@ -1228,9 +1314,10 @@ export const ChatRowContent = ({
 							</div>
 						)
 					} else {
-						return null // Don't render anything when we get a completion_result ask without text
+						return null
 					}
-				case "followup":
+				case "followup": {
+					// Added block scope
 					let question: string | undefined
 					let options: string[] | undefined
 					let selected: string | undefined
@@ -1240,7 +1327,6 @@ export const ChatRowContent = ({
 						options = parsedMessage.options
 						selected = parsedMessage.selected
 					} catch (e) {
-						// legacy messages would pass question directly
 						question = message.text
 					}
 
@@ -1263,6 +1349,7 @@ export const ChatRowContent = ({
 							</div>
 						</>
 					)
+				}
 				case "new_task":
 					return (
 						<>
@@ -1288,7 +1375,6 @@ export const ChatRowContent = ({
 						options = parsedMessage.options
 						selected = parsedMessage.selected
 					} catch (e) {
-						// legacy messages would pass response directly
 						response = message.text
 					}
 					return (
@@ -1307,6 +1393,8 @@ export const ChatRowContent = ({
 					return null
 			}
 	}
+	// Added default return for the component function itself
+	return null
 }
 
 function parseErrorText(text: string | undefined) {
@@ -1324,4 +1412,6 @@ function parseErrorText(text: string | undefined) {
 	} catch (e) {
 		// Not JSON or missing required fields
 	}
+	// Added default return
+	return undefined
 }
