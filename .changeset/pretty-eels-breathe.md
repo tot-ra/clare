@@ -1,5 +1,5 @@
 ---
-"claude-dev": patch
+"clare": patch
 ---
 
 fix vertexai token count

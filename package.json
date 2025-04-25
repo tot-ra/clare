@@ -1,5 +1,5 @@
 {
-	"name": "claude-dev",
+	"name": "clare",
 	"displayName": "CLARE",
 	"description": "Autonomous coding agent right in your IDE, capable of creating/editing files, running commands, using the browser, and more with your permission every step of the way.",
 	"version": "3.12.3",
@@ -8,15 +8,15 @@
 		"vscode": "^1.84.0"
 	},
 	"author": {
-		"name": "Cline Bot Inc."
+		"name": "Artjom Kurapov, Cline Bot Inc."
 	},
 	"license": "Apache-2.0",
-	"publisher": "saoudrizwan",
+	"publisher": "tot-ra",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/cline/cline"
+		"url": "https://github.com/tot-ra/clare"
 	},
-	"homepage": "https://cline.bot",
+	"homepage": "https://clarifai.com",
 	"categories": [
 		"AI",
 		"Chat",
@@ -26,21 +26,16 @@
 		"Testing"
 	],
 	"keywords": [
-		"cline",
-		"claude",
+		"clare",
 		"dev",
 		"mcp",
-		"openrouter",
 		"coding",
 		"agent",
 		"autonomous",
-		"chatgpt",
-		"sonnet",
-		"ai",
-		"llama"
+		"ai"
 	],
 	"activationEvents": [
-		"onView:claude-dev.SidebarProvider",
+		"onView:clare.SidebarProvider",
 		"onCommand:cline.plusButtonClicked",
 		"onCommand:cline.mcpButtonClicked",
 		"onCommand:cline.historyButtonClicked",
@@ -59,17 +54,17 @@
 		"viewsContainers": {
 			"activitybar": [
 				{
-					"id": "claude-dev-ActivityBar",
+					"id": "clare-ActivityBar",
 					"title": "CLARE",
 					"icon": "assets/icons/clarifai-icon.svg"
 				}
 			]
 		},
 		"views": {
-			"claude-dev-ActivityBar": [
+			"clare-ActivityBar": [
 				{
 					"type": "webview",
-					"id": "claude-dev.SidebarProvider",
+					"id": "clare.SidebarProvider",
 					"name": ""
 				}
 			]
@@ -152,34 +147,34 @@
 				{
 					"command": "cline.plusButtonClicked",
 					"group": "navigation@1",
-					"when": "view == claude-dev.SidebarProvider"
+					"when": "view == clare.SidebarProvider"
 				},
 				{
 					"command": "cline.mcpButtonClicked",
 					"group": "navigation@2",
-					"when": "view == claude-dev.SidebarProvider"
+					"when": "view == clare.SidebarProvider"
 				},
 				{
 					"command": "cline.settingsButtonClicked",
 					"group": "navigation@6",
-					"when": "view == claude-dev.SidebarProvider"
+					"when": "view == clare.SidebarProvider"
 				}
 			],
 			"editor/title": [
 				{
 					"command": "cline.plusButtonClicked",
 					"group": "navigation@1",
-					"when": "activeWebviewPanelId == claude-dev.TabPanelProvider"
+					"when": "activeWebviewPanelId == clare.TabPanelProvider"
 				},
 				{
 					"command": "cline.mcpButtonClicked",
 					"group": "navigation@2",
-					"when": "activeWebviewPanelId == claude-dev.TabPanelProvider"
+					"when": "activeWebviewPanelId == clare.TabPanelProvider"
 				},
 				{
 					"command": "cline.settingsButtonClicked",
 					"group": "navigation@6",
-					"when": "activeWebviewPanelId == claude-dev.TabPanelProvider"
+					"when": "activeWebviewPanelId == clare.TabPanelProvider"
 				}
 			],
 			"editor/context": [
@@ -277,6 +272,11 @@
 					"type": "string",
 					"default": null,
 					"description": "Optional custom base URL for Clarifai API (e.g., for self-hosted instances). Defaults to https://api.clarifai.com."
+				},
+				"cline.panelTitle": {
+					"type": "string",
+					"default": "CLARE",
+					"description": "Title to display in the extension panel."
 				}
 			}
 		}

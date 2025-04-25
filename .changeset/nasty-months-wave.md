@@ -1,5 +1,5 @@
 ---
-"claude-dev": patch
+"clare": patch
 ---
 
 Add command to focus chat input
