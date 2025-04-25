@@ -1845,7 +1845,7 @@ export class Task {
 								} else {
 									// If auto-approval is enabled but this tool wasn't auto-approved, send notification
 									showNotificationForApprovalIfAutoApprovalEnabled(
-										`Cline wants to ${fileExists ? "edit" : "create"} ${path.basename(relPath)}`,
+										`Clare wants to ${fileExists ? "edit" : "create"} ${path.basename(relPath)}`,
 									)
 									this.removeLastPartialMessageIfExistsWithType("say", "tool")
 
@@ -1992,7 +1992,7 @@ export class Task {
 									telemetryService.captureToolUsage(this.taskId, block.name, true, true)
 								} else {
 									showNotificationForApprovalIfAutoApprovalEnabled(
-										`Cline wants to read ${path.basename(absolutePath)}`,
+										`Clare wants to read ${path.basename(absolutePath)}`,
 									)
 									this.removeLastPartialMessageIfExistsWithType("say", "tool")
 									const didApprove = await askApproval("tool", completeMessage)
@@ -2072,7 +2072,7 @@ export class Task {
 									telemetryService.captureToolUsage(this.taskId, block.name, true, true)
 								} else {
 									showNotificationForApprovalIfAutoApprovalEnabled(
-										`Cline wants to view directory ${path.basename(absolutePath)}/`,
+										`Clare wants to view directory ${path.basename(absolutePath)}/`,
 									)
 									this.removeLastPartialMessageIfExistsWithType("say", "tool")
 									const didApprove = await askApproval("tool", completeMessage)
@@ -2141,7 +2141,7 @@ export class Task {
 									telemetryService.captureToolUsage(this.taskId, block.name, true, true)
 								} else {
 									showNotificationForApprovalIfAutoApprovalEnabled(
-										`Cline wants to view source code definitions in ${path.basename(absolutePath)}/`,
+										`Clare wants to view source code definitions in ${path.basename(absolutePath)}/`,
 									)
 									this.removeLastPartialMessageIfExistsWithType("say", "tool")
 									const didApprove = await askApproval("tool", completeMessage)
@@ -2222,7 +2222,7 @@ export class Task {
 									telemetryService.captureToolUsage(this.taskId, block.name, true, true)
 								} else {
 									showNotificationForApprovalIfAutoApprovalEnabled(
-										`Cline wants to search files in ${path.basename(absolutePath)}/`,
+										`Clare wants to search files in ${path.basename(absolutePath)}/`,
 									)
 									this.removeLastPartialMessageIfExistsWithType("say", "tool")
 									const didApprove = await askApproval("tool", completeMessage)
@@ -2308,7 +2308,7 @@ export class Task {
 										this.consecutiveAutoApprovedRequestsCount++
 									} else {
 										showNotificationForApprovalIfAutoApprovalEnabled(
-											`Cline wants to use a browser and launch ${url}`,
+											`Clare wants to use a browser and launch ${url}`,
 										)
 										this.removeLastPartialMessageIfExistsWithType("say", "browser_action_launch")
 										const didApprove = await askApproval("browser_action_launch", url)
@@ -2488,7 +2488,7 @@ export class Task {
 									didAutoApprove = true
 								} else {
 									showNotificationForApprovalIfAutoApprovalEnabled(
-										`Cline wants to execute a command: ${command}`,
+										`Clare wants to execute a command: ${command}`,
 									)
 									// this.removeLastPartialMessageIfExistsWithType("say", "command")
 									const didApprove = await askApproval(
@@ -2614,7 +2614,7 @@ export class Task {
 									this.consecutiveAutoApprovedRequestsCount++
 								} else {
 									showNotificationForApprovalIfAutoApprovalEnabled(
-										`Cline wants to use ${tool_name} on ${server_name}`,
+										`Clare wants to use ${tool_name} on ${server_name}`,
 									)
 									this.removeLastPartialMessageIfExistsWithType("say", "use_mcp_server")
 									const didApprove = await askApproval("use_mcp_server", completeMessage)
@@ -2702,7 +2702,7 @@ export class Task {
 									this.consecutiveAutoApprovedRequestsCount++
 								} else {
 									showNotificationForApprovalIfAutoApprovalEnabled(
-										`Cline wants to access ${uri} on ${server_name}`,
+										`Clare wants to access ${uri} on ${server_name}`,
 									)
 									this.removeLastPartialMessageIfExistsWithType("say", "use_mcp_server")
 									const didApprove = await askApproval("use_mcp_server", completeMessage)
@@ -2812,7 +2812,7 @@ export class Task {
 
 								if (this.autoApprovalSettings.enabled && this.autoApprovalSettings.enableNotifications) {
 									showSystemNotification({
-										subtitle: "Cline wants to start a new task...",
+										subtitle: "Clare wants to start a new task...",
 										message: `Cline is suggesting to start a new task with: ${context}`,
 									})
 								}

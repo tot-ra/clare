@@ -213,7 +213,7 @@ export const ChatRowContent = ({
 								marginBottom: "-1.5px",
 							}}></span>
 					),
-					<span style={{ color: normalColor, fontWeight: "bold" }}>Cline wants to execute this command:</span>,
+					<span style={{ color: normalColor, fontWeight: "bold" }}>Clare wants to execute this command:</span>,
 				]
 			case "use_mcp_server":
 				const mcpServerUse = JSON.parse(message.text || "{}") as ClineAskUseMcpServer
@@ -229,7 +229,7 @@ export const ChatRowContent = ({
 							}}></span>
 					),
 					<span style={{ color: normalColor, fontWeight: "bold", wordBreak: "break-word" }}>
-						Cline wants to {mcpServerUse.type === "use_mcp_tool" ? "use a tool" : "access a resource"} on the{" "}
+						Clare wants to {mcpServerUse.type === "use_mcp_tool" ? "use a tool" : "access a resource"} on the{" "}
 						<code style={{ wordBreak: "break-all" }}>
 							{getMcpServerDisplayName(mcpServerUse.serverName, mcpMarketplaceCatalog)}
 						</code>{" "}
@@ -302,12 +302,14 @@ export const ChatRowContent = ({
 			case "followup":
 				return [
 					<span
-						className="codicon codicon-question"
+						className="codicon"
 						style={{
 							color: normalColor,
 							marginBottom: "-1.5px",
-						}}></span>,
-					<span style={{ color: normalColor, fontWeight: "bold" }}>Cline has a question:</span>,
+						}}>
+						👩🏻‍🔬
+					</span>,
+					<span style={{ color: normalColor, fontWeight: "bold" }}>Clare has a question:</span>,
 				]
 			default:
 				return [null, null]
@@ -360,7 +362,7 @@ export const ChatRowContent = ({
 							{toolIcon("edit")}
 							{!tool.operationIsLocatedInWorkspace &&
 								toolIcon("sign-out", "yellow", -90, "This file is outside of your workspace")}
-							<span style={{ fontWeight: "bold" }}>Cline wants to edit this file:</span>
+							<span style={{ fontWeight: "bold" }}>Clare wants to edit this file:</span>
 						</div>
 						<CodeAccordian
 							// isLoading={message.partial}
@@ -378,7 +380,7 @@ export const ChatRowContent = ({
 							{toolIcon("new-file")}
 							{!tool.operationIsLocatedInWorkspace &&
 								toolIcon("sign-out", "yellow", -90, "This file is outside of your workspace")}
-							<span style={{ fontWeight: "bold" }}>Cline wants to create a new file:</span>
+							<span style={{ fontWeight: "bold" }}>Clare wants to create a new file:</span>
 						</div>
 						<CodeAccordian
 							isLoading={message.partial}
@@ -398,7 +400,7 @@ export const ChatRowContent = ({
 								toolIcon("sign-out", "yellow", -90, "This file is outside of your workspace")}
 							<span style={{ fontWeight: "bold" }}>
 								{/* {message.type === "ask" ? "" : "Cline read this file:"} */}
-								Cline wants to read this file:
+								Clare wants to read this file:
 							</span>
 						</div>
 						<div
@@ -458,7 +460,7 @@ export const ChatRowContent = ({
 								toolIcon("sign-out", "yellow", -90, "This is outside of your workspace")}
 							<span style={{ fontWeight: "bold" }}>
 								{message.type === "ask"
-									? "Cline wants to view the top level files in this directory:"
+									? "Clare wants to view the top level files in this directory:"
 									: "Cline viewed the top level files in this directory:"}
 							</span>
 						</div>
@@ -480,7 +482,7 @@ export const ChatRowContent = ({
 								toolIcon("sign-out", "yellow", -90, "This is outside of your workspace")}
 							<span style={{ fontWeight: "bold" }}>
 								{message.type === "ask"
-									? "Cline wants to recursively view all files in this directory:"
+									? "Clare wants to recursively view all files in this directory:"
 									: "Cline recursively viewed all files in this directory:"}
 							</span>
 						</div>
@@ -502,7 +504,7 @@ export const ChatRowContent = ({
 								toolIcon("sign-out", "yellow", -90, "This is outside of your workspace")}
 							<span style={{ fontWeight: "bold" }}>
 								{message.type === "ask"
-									? "Cline wants to view source code definition names used in this directory:"
+									? "Clare wants to view source code definition names used in this directory:"
 									: "Cline viewed source code definition names used in this directory:"}
 							</span>
 						</div>
@@ -522,7 +524,7 @@ export const ChatRowContent = ({
 							{!tool.operationIsLocatedInWorkspace &&
 								toolIcon("sign-out", "yellow", -90, "This is outside of your workspace")}
 							<span style={{ fontWeight: "bold" }}>
-								Cline wants to search this directory for <code>{tool.regex}</code>:
+								Clare wants to search this directory for <code>{tool.regex}</code>:
 							</span>
 						</div>
 						<CodeAccordian
@@ -1271,7 +1273,7 @@ export const ChatRowContent = ({
 										color: normalColor,
 										marginBottom: "-1.5px",
 									}}></span>
-								<span style={{ color: normalColor, fontWeight: "bold" }}>Cline wants to start a new task:</span>
+								<span style={{ color: normalColor, fontWeight: "bold" }}>Clare wants to start a new task:</span>
 							</div>
 							<NewTaskPreview context={message.text || ""} />
 						</>
