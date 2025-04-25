@@ -1,11 +1,9 @@
 # Clare 👩🏻‍🔬
 Clare is a [Clarifai](https://clarifai.com) AI agent for coding, a VSCode extension.
 
-This is a hard fork of Cline. Differences:
-
-More lightweight:
-- Clarifai is used for main LLM hosting
-- simple UI
-- no checkpoints
+Clare is a hard fork of Cline and it includes these differences:
+- added Clarifai as main LLM provider
+- simplified UI
+- removed checkpoints
 
 ![](./docs/clare.jpg)
