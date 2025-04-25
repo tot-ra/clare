@@ -100,6 +100,7 @@ export const ExtensionStateContextProvider: React.FC<{
 							config.asksageApiKey,
 							config.xaiApiKey,
 							config.sambanovaApiKey,
+							config.clarifaiPat, // Add Clarifai PAT check
 						].some((key) => key !== undefined)
 					: false
 				setShowWelcome(!hasKey)

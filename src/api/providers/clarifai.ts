@@ -1,10 +1,9 @@
 import { Anthropic } from "@anthropic-ai/sdk"
-import { ApiHandlerOptions } from "../../shared/api"
+import { ApiHandlerOptions, ClarifaiModelId, clarifaiDefaultModelId, clarifaiModels, ModelInfo } from "../../shared/api" // Added Clarifai imports
 import axios from "axios"
 import { ApiHandler } from "../index"
 import { ApiStream, ApiStreamChunk } from "../transform/stream"
 import { Logger } from "../../services/logging/Logger"
-import { ModelInfo } from "../../shared/api"
 import { parseStringPromise } from "xml2js" // Import xml2js for robust XML parsing
 
 // Placeholder for Clarifai API handler
@@ -22,31 +21,8 @@ export class ClarifaiHandler implements ApiHandler {
 	}
 
 	getModel(): { id: string; info: ModelInfo } {
-		const modelId = this.options.apiModelId || "clarifai-default"
-		let modelInfo: ModelInfo = { supportsPromptCache: false }
-
-		switch (modelId) {
-			case "mistralai/completion/models/codestral-22b-instruct":
-				modelInfo.inputPrice = 0.005 * 1_000_000
-				modelInfo.outputPrice = modelInfo.inputPrice
-				modelInfo.contextWindow = 32000
-				break
-			case "deepseek-ai/deepseek-chat/models/deepseek-V2-Chat":
-				modelInfo.inputPrice = 0.004 * 1_000_000
-				modelInfo.outputPrice = modelInfo.inputPrice
-				modelInfo.contextWindow = 128000
-				break
-			case "meta/Llama-3/models/llama-3-70B-Instruct":
-				modelInfo.inputPrice = 0.008 * 1_000_000
-				modelInfo.outputPrice = modelInfo.inputPrice
-				modelInfo.contextWindow = 128000
-				break
-			case "meta/Llama-3/models/llama-3_2-11b-vision-instruct":
-				modelInfo.inputPrice = 0.008 * 1_000_000
-				modelInfo.outputPrice = modelInfo.inputPrice
-				modelInfo.contextWindow = 128000
-				break
-		}
+		const modelId = (this.options.apiModelId || clarifaiDefaultModelId) as ClarifaiModelId
+		const modelInfo = clarifaiModels[modelId] || clarifaiModels[clarifaiDefaultModelId]
 
 		return {
 			id: modelId,
@@ -259,22 +235,7 @@ export class ClarifaiHandler implements ApiHandler {
 	}
 
 	async listAvailableModels(): Promise<string[]> {
-		const pat = this.options.clarifaiPat
-
-		if (!pat) {
-			Logger.warn("Cannot list Clarifai models without a PAT.")
-			return []
-		}
-
-		Logger.info("Clarifai listModels called")
-
-		// Returning hardcoded model ID as requested, pending full REST API implementation
-
-		return [
-			"deepseek-ai/deepseek-chat/models/deepseek-V2-Chat",
-			"mistralai/completion/models/codestral-22b-instruct",
-			"meta/Llama-3/models/llama-3-70B-Instruct",
-			"meta/Llama-3/models/llama-3_2-11b-vision-instruct",
-		]
+		// Return models defined in the shared api.ts
+		return Object.keys(clarifaiModels)
 	}
 }

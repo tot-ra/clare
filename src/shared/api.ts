@@ -1609,6 +1609,43 @@ export const sambanovaModels = {
 	},
 } as const satisfies Record<string, ModelInfo>
 
+// Clarifai
+// Note: Pricing below is based on placeholders found in the original clarifai.ts.
+// Actual Clarifai pricing needs verification and update.
+export type ClarifaiModelId = keyof typeof clarifaiModels
+// Using Llama 3 70B as default, adjust if needed
+export const clarifaiDefaultModelId: ClarifaiModelId = "meta/Llama-3/models/llama-3-70B-Instruct"
+export const clarifaiModels = {
+	"mistralai/completion/models/codestral-22b-instruct": {
+		inputPrice: 0.005 * 1_000_000, // Placeholder price
+		outputPrice: 0.005 * 1_000_000, // Placeholder price
+		contextWindow: 32000,
+		supportsPromptCache: false, // Assuming false
+		supportsImages: false, // Assuming false
+	},
+	"deepseek-ai/deepseek-chat/models/deepseek-V2-Chat": {
+		inputPrice: 0.004 * 1_000_000, // Placeholder price
+		outputPrice: 0.004 * 1_000_000, // Placeholder price
+		contextWindow: 128000,
+		supportsPromptCache: false, // Assuming false
+		supportsImages: false, // Assuming false
+	},
+	"meta/Llama-3/models/llama-3-70B-Instruct": {
+		inputPrice: 0.008 * 1_000_000, // Placeholder price
+		outputPrice: 0.008 * 1_000_000, // Placeholder price
+		contextWindow: 128000,
+		supportsPromptCache: false, // Assuming false
+		supportsImages: false, // Assuming false
+	},
+	"meta/Llama-3/models/llama-3_2-11b-vision-instruct": {
+		inputPrice: 0.008 * 1_000_000, // Placeholder price
+		outputPrice: 0.008 * 1_000_000, // Placeholder price
+		contextWindow: 128000,
+		supportsPromptCache: false, // Assuming false
+		supportsImages: true, // This is a vision model
+	},
+} as const satisfies Record<string, ModelInfo>
+
 // Requesty
 // https://requesty.ai/models
 export const requestyDefaultModelId = "anthropic/claude-3-7-sonnet-latest"

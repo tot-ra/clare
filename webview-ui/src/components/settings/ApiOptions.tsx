@@ -1884,7 +1884,7 @@ export function normalizeApiConfiguration(apiConfiguration?: ApiConfiguration): 
 	selectedModelId: string
 	selectedModelInfo: ModelInfo
 } {
-	const provider = apiConfiguration?.apiProvider || "anthropic"
+	const provider = apiConfiguration?.apiProvider || "clarifai"
 	const modelId = apiConfiguration?.apiModelId
 
 	const getProviderData = (models: Record<string, ModelInfo>, defaultId: string) => {
@@ -1984,6 +1984,7 @@ export function normalizeApiConfiguration(apiConfiguration?: ApiConfiguration): 
 			return getProviderData(xaiModels, xaiDefaultModelId)
 		case "sambanova":
 			return getProviderData(sambanovaModels, sambanovaDefaultModelId)
+
 		case "clarifai":
 			// Placeholder: Define actual models and default later
 			return {
@@ -1991,6 +1992,7 @@ export function normalizeApiConfiguration(apiConfiguration?: ApiConfiguration): 
 				selectedModelId: apiConfiguration?.apiModelId || "", // Or a default Clarifai model ID
 				selectedModelInfo: { ...openAiModelInfoSaneDefaults }, // Placeholder info
 			}
+
 		default:
 			return getProviderData(anthropicModels, anthropicDefaultModelId)
 	}

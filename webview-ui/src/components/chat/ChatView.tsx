@@ -840,7 +840,7 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 					<div style={{ padding: "0 20px", flexShrink: 0 }}>
 						<h2>👩🏻‍🔬 CLARE</h2>
 					</div>
-					{telemetrySetting === "unset" && <TelemetryBanner />}
+					{/* {telemetrySetting === "unset" && <TelemetryBanner />} */}
 
 					{/* {showAnnouncement && <Announcement version={version} hideAnnouncement={hideAnnouncement} />} */}
 
