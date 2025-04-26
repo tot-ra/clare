@@ -761,6 +761,7 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 					type: "togglePlanActMode",
 					chatSettings: {
 						mode: newMode,
+						requestsPerMinuteLimit: chatSettings.requestsPerMinuteLimit,
 					},
 					chatContent: {
 						message: inputValue.trim() ? inputValue : undefined,

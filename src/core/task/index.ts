@@ -1285,6 +1285,7 @@ export class Task {
 				console.log(`[RateLimit] Oldest timestamp: ${oldestTimestampInWindow}, Time to wait: ${timeToWait}`) // Log wait calculation
 				if (timeToWait > 0) {
 					console.log(`[RateLimit] Rate limit reached (${limit} RPM). Waiting for ${timeToWait}ms...`)
+					await this.say("rate_limit_wait", JSON.stringify({ duration: timeToWait }))
 					await setTimeoutPromise(timeToWait)
 					console.log(`[RateLimit] Finished waiting.`) // Log after wait
 				} else {

@@ -142,6 +142,12 @@ export const ChatRowContent = ({
 	const [elapsedTime, setElapsedTime] = useState<number | null>(null)
 	const [finalElapsedTime, setFinalElapsedTime] = useState<number | null>(null) // State for final duration
 	const intervalRef = useRef<NodeJS.Timeout | null>(null)
+	const rateLimitIntervalRef = useRef<NodeJS.Timeout | null>(null)
+
+	// State for rate limit countdown
+	const [isRateLimitWaiting, setIsRateLimitWaiting] = useState(false)
+	const [rateLimitEndTime, setRateLimitEndTime] = useState<number | null>(null)
+	const [rateLimitRemaining, setRateLimitRemaining] = useState<number | null>(null)
 
 	const [cost, apiReqCancelReason, apiReqStreamingFailedMessage] = useMemo(() => {
 		if (message.text != null && message.say === "api_req_started") {
@@ -184,7 +190,7 @@ export const ChatRowContent = ({
 
 	useEvent("message", handleMessage)
 
-	// Effect to manage the timer interval
+	// Effect to manage the API request timer interval
 	useEffect(() => {
 		if (startTime !== null) {
 			if (intervalRef.current) {
@@ -208,6 +214,46 @@ export const ChatRowContent = ({
 			}
 		}
 	}, [startTime])
+
+	// Effect to manage the rate limit countdown timer
+	useEffect(() => {
+		// Clear any existing interval when message changes or wait ends
+		if (rateLimitIntervalRef.current) {
+			clearInterval(rateLimitIntervalRef.current)
+			rateLimitIntervalRef.current = null
+		}
+
+		// Only run if this is the last message and we are waiting
+		if (isLast && isRateLimitWaiting && rateLimitEndTime !== null) {
+			const updateRemaining = () => {
+				const remaining = Math.max(0, rateLimitEndTime - Date.now())
+				setRateLimitRemaining(remaining)
+				if (remaining <= 0) {
+					if (rateLimitIntervalRef.current) {
+						clearInterval(rateLimitIntervalRef.current)
+						rateLimitIntervalRef.current = null
+					}
+					setIsRateLimitWaiting(false) // Wait finished
+					setRateLimitEndTime(null)
+				}
+			}
+			updateRemaining() // Initial update
+			rateLimitIntervalRef.current = setInterval(updateRemaining, 100)
+		} else {
+			// Reset state if not the last message or not waiting
+			setIsRateLimitWaiting(false)
+			setRateLimitEndTime(null)
+			setRateLimitRemaining(null)
+		}
+
+		// Cleanup function
+		return () => {
+			if (rateLimitIntervalRef.current) {
+				clearInterval(rateLimitIntervalRef.current)
+				rateLimitIntervalRef.current = null
+			}
+		}
+	}, [isLast, isRateLimitWaiting, rateLimitEndTime, message.ts]) // Depend on message.ts to reset on new message
 
 	const [icon, title]: [React.ReactNode, React.ReactNode] = useMemo(() => {
 		switch (type) {
@@ -285,6 +331,10 @@ export const ChatRowContent = ({
 							: ProgressIndicator()
 
 				const currentTitle = (() => {
+					if (isRateLimitWaiting) {
+						return null
+					}
+
 					if (isCancelled) {
 						return apiReqCancelReason === "user_cancelled" ? (
 							<span style={{ color: normalColor, fontWeight: "bold" }}>API Request Cancelled</span>
@@ -328,6 +378,30 @@ export const ChatRowContent = ({
 
 				// Return the icon and the calculated title
 				return [currentIcon, currentTitle]
+			}
+			case "rate_limit_wait": {
+				// This case is now handled primarily by the effect and state variables
+				// We still need to trigger the state update if this is the last message
+				if (isLast && !isRateLimitWaiting) {
+					let duration = 0
+					if (message.text) {
+						try {
+							const parsed = JSON.parse(message.text) as { duration: number }
+							duration = parsed.duration
+						} catch (e) {
+							console.error("Failed to parse rate_limit_wait duration", e)
+						}
+					}
+					if (duration > 0) {
+						// Use setTimeout to defer state update slightly, allowing render cycle to complete
+						setTimeout(() => {
+							setRateLimitEndTime(Date.now() + duration)
+							setIsRateLimitWaiting(true)
+						}, 0)
+					}
+				}
+				// The actual rendering is handled later based on isRateLimitWaiting state
+				return [null, null] // Return null initially, rendering will be updated by state change
 			}
 			case "followup": {
 				return [
@@ -893,7 +967,30 @@ export const ChatRowContent = ({
 				case "api_req_finished":
 					return null
 				case "mcp_server_response":
-					return <McpResponseDisplay responseText={message.text || ""} />
+					return <McpResponseDisplay responseText={message.text || ""} /> // Remove semicolon again
+				case "rate_limit_wait": {
+					let contentToRender = null
+					// Render based on state managed by useEffect
+					if (isLast && isRateLimitWaiting && rateLimitRemaining !== null) {
+						const durationText = ` (${(rateLimitRemaining / 1000).toFixed(1)}s)`
+						contentToRender = (
+							// Use React.Fragment shorthand <>
+							<>
+								<div style={headerStyle}>
+									<ProgressIndicator />
+									<span style={{ color: normalColor, fontWeight: "bold" }}>
+										Rate limit active{durationText}
+									</span>
+								</div>
+								{/* Minimal content div to ensure row has some height */}
+								<div style={{ height: "1px" }}></div>
+							</>
+						)
+					}
+					// If not the last message or wait is over, render nothing for this specific message type
+					return contentToRender
+					break // Add explicit break statement
+				}
 				case "text":
 					return (
 						<div>

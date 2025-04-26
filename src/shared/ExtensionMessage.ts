@@ -212,6 +212,7 @@ export type ClineSay =
 	| "clineignore_error"
 	| "checkpoint_created"
 	| "load_mcp_documentation"
+	| "rate_limit_wait"
 
 export interface ClineSayTool {
 	tool:
