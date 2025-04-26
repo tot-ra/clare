@@ -2757,7 +2757,7 @@ export class Task {
 
 								if (this.autoApprovalSettings.enabled && this.autoApprovalSettings.enableNotifications) {
 									showSystemNotification({
-										subtitle: "Cline has a question...",
+										subtitle: "Clare has a question...",
 										message: question.replace(/\n/g, " "),
 									})
 								}
@@ -3152,7 +3152,7 @@ export class Task {
 			if (this.autoApprovalSettings.enabled && this.autoApprovalSettings.enableNotifications) {
 				showSystemNotification({
 					subtitle: "Error",
-					message: "Cline is having trouble. Would you like to continue the task?",
+					message: "Clare is having trouble. Would you like to continue the task?",
 				})
 			}
 			const { response, text, images } = await this.ask(
