@@ -18,6 +18,7 @@ import { DEFAULT_BROWSER_SETTINGS } from "@shared/BrowserSettings"
 import { DEFAULT_CHAT_SETTINGS } from "@shared/ChatSettings"
 import { TelemetrySetting } from "@shared/TelemetrySetting"
 import { ClineRulesToggles } from "@shared/cline-rules"
+import { ChatSettings } from "@shared/ChatSettings" // Import ChatSettings
 interface ExtensionStateContextType extends ExtensionState {
 	didHydrateState: boolean
 	showWelcome: boolean
@@ -34,6 +35,7 @@ interface ExtensionStateContextType extends ExtensionState {
 	setTelemetrySetting: (value: TelemetrySetting) => void
 	setShowAnnouncement: (value: boolean) => void
 	setPlanActSeparateModelsSetting: (value: boolean) => void
+	setChatSettings: (value: ChatSettings) => void // Add setter for ChatSettings
 }
 
 const ExtensionStateContext = createContext<ExtensionStateContextType | undefined>(undefined)
@@ -215,6 +217,13 @@ export const ExtensionStateContextProvider: React.FC<{
 				...prevState,
 				shouldShowAnnouncement: value,
 			})),
+		setChatSettings: (value) => {
+			setState((prevState) => ({
+				...prevState,
+				chatSettings: value,
+			}))
+			vscode.postMessage({ type: "updateChatSettings", chatSettings: value })
+		},
 	}
 
 	return <ExtensionStateContext.Provider value={contextValue}>{children}</ExtensionStateContext.Provider>

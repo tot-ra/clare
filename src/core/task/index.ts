@@ -154,6 +154,7 @@ export class Task {
 	private didAlreadyUseTool = false
 	private didCompleteReadingStream = false
 	private didAutomaticallyRetryFailedApiRequest = false
+	private requestTimestamps: number[] = [] // Added for rate limiting
 
 	constructor(
 		context: vscode.ExtensionContext,
@@ -1264,6 +1265,45 @@ export class Task {
 	}
 
 	async *attemptApiRequest(previousApiReqIndex: number): ApiStream {
+		// Rate Limiting Logic
+		const limit = this.chatSettings.requestsPerMinuteLimit ?? 0
+		console.log(`[RateLimit] Checking limit: ${limit} RPM`) // Log limit
+		if (limit > 0) {
+			const now = Date.now()
+			const oneMinuteAgo = now - 60000
+			console.log(`[RateLimit] Current time: ${now}, 1 min ago: ${oneMinuteAgo}`) // Log times
+			console.log(`[RateLimit] Timestamps before filter: ${JSON.stringify(this.requestTimestamps)}`) // Log timestamps before
+
+			// Filter out timestamps older than one minute
+			this.requestTimestamps = this.requestTimestamps.filter((ts) => ts > oneMinuteAgo)
+			console.log(`[RateLimit] Timestamps after filter: ${JSON.stringify(this.requestTimestamps)}`) // Log timestamps after
+			console.log(`[RateLimit] Current count: ${this.requestTimestamps.length}, Limit: ${limit}`) // Log count vs limit
+
+			if (this.requestTimestamps.length >= limit) {
+				const oldestTimestampInWindow = this.requestTimestamps[0] // Array is sorted implicitly by insertion order
+				const timeToWait = oldestTimestampInWindow + 60000 - now
+				console.log(`[RateLimit] Oldest timestamp: ${oldestTimestampInWindow}, Time to wait: ${timeToWait}`) // Log wait calculation
+				if (timeToWait > 0) {
+					console.log(`[RateLimit] Rate limit reached (${limit} RPM). Waiting for ${timeToWait}ms...`)
+					await setTimeoutPromise(timeToWait)
+					console.log(`[RateLimit] Finished waiting.`) // Log after wait
+				} else {
+					console.log(`[RateLimit] Limit reached, but oldest request is > 1 min old. Proceeding.`) // Log if wait time is <= 0
+				}
+				// Add the timestamp *after* waiting
+				const waitedNow = Date.now()
+				this.requestTimestamps.push(waitedNow)
+				console.log(`[RateLimit] Added timestamp after wait: ${waitedNow}`) // Log timestamp add
+			} else {
+				// Add timestamp if limit not reached
+				this.requestTimestamps.push(now)
+				console.log(`[RateLimit] Limit not reached. Added timestamp: ${now}`) // Log timestamp add
+			}
+			// Keep the array sorted (though push maintains order) and trim if needed (shouldn't be necessary with filtering)
+			// this.requestTimestamps.sort((a, b) => a - b);
+		}
+		// End Rate Limiting Logic
+
 		// Wait for MCP servers to be connected before generating system prompt
 		await pWaitFor(() => this.mcpHub.isConnecting !== true, { timeout: 10_000 }).catch(() => {
 			console.error("MCP servers failed to connect in time")

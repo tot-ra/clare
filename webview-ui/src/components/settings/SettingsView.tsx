@@ -1,4 +1,11 @@
-import { VSCodeButton, VSCodeCheckbox, VSCodeLink, VSCodeTextArea } from "@vscode/webview-ui-toolkit/react"
+import {
+	VSCodeButton,
+	VSCodeCheckbox,
+	VSCodeLink,
+	VSCodeTextArea,
+	VSCodeDropdown,
+	VSCodeOption,
+} from "@vscode/webview-ui-toolkit/react"
 import { memo, useCallback, useEffect, useState } from "react"
 import { useExtensionState } from "@/context/ExtensionStateContext"
 import { validateApiConfiguration, validateModelId } from "@/utils/validate"
@@ -26,6 +33,7 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 		telemetrySetting,
 		setTelemetrySetting,
 		chatSettings,
+		setChatSettings, // Add setChatSettings
 		planActSeparateModelsSetting,
 		setPlanActSeparateModelsSetting,
 	} = useExtensionState()
@@ -102,6 +110,7 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 							type: "togglePlanActMode",
 							chatSettings: {
 								mode: pendingTabChange,
+								requestsPerMinuteLimit: chatSettings.requestsPerMinuteLimit, // Include the limit
 							},
 						})
 						setPendingTabChange(null)
@@ -176,11 +185,34 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 				) : (
 					<ApiOptions
 						key={"single"}
-						showModelOptions={true}
+						showModelOptions={true} // Keep ApiOptions below the rate limit dropdown
 						apiErrorMessage={apiErrorMessage}
 						modelIdErrorMessage={modelIdErrorMessage}
 					/>
 				)}
+
+				{/* Rate Limit Dropdown */}
+				<div className="mb-[15px]">
+					<VSCodeDropdown
+						value={String(chatSettings.requestsPerMinuteLimit ?? 0)}
+						onChange={(e: any) => {
+							const limit = parseInt(e.target?.value ?? "0", 10)
+							setChatSettings({ ...chatSettings, requestsPerMinuteLimit: limit })
+						}}>
+						<span slot="label">Request Rate Limit (per minute)</span>
+						<VSCodeOption value="0">No Limit</VSCodeOption>
+						<VSCodeOption value="2">2</VSCodeOption>
+						<VSCodeOption value="5">5</VSCodeOption>
+						<VSCodeOption value="10">10</VSCodeOption>
+						<VSCodeOption value="15">15</VSCodeOption>
+						<VSCodeOption value="20">20</VSCodeOption>
+						<VSCodeOption value="30">30</VSCodeOption>
+						<VSCodeOption value="60">60</VSCodeOption>
+					</VSCodeDropdown>
+					<p className="text-xs mt-[5px] text-[var(--vscode-descriptionForeground)]">
+						Limit the number of API requests sent per minute. Helps manage costs and avoid provider rate limits.
+					</p>
+				</div>
 
 				<div className="mb-[5px]">
 					<VSCodeTextArea

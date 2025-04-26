@@ -312,6 +312,23 @@ export class Controller {
 					await this.postStateToWebview()
 				}
 				break
+			case "updateChatSettings":
+				if (message.chatSettings) {
+					console.log("[Controller] Received updateChatSettings:", JSON.stringify(message.chatSettings)) // Log received settings
+					await updateGlobalState(this.context, "chatSettings", message.chatSettings)
+					if (this.task) {
+						console.log(`[Controller] Updating task instance (ID: ${this.task.taskId}) chatSettings.`) // Log task update
+						this.task.chatSettings = message.chatSettings
+						console.log(
+							`[Controller] Task instance chatSettings after update:`,
+							JSON.stringify(this.task.chatSettings),
+						) // Log updated task settings
+					} else {
+						console.log("[Controller] No active task instance to update chatSettings for.") // Log if no task
+					}
+					await this.postStateToWebview()
+				}
+				break
 			case "discoverBrowser":
 				try {
 					const discoveredHost = await discoverChromeInstances()
@@ -563,7 +580,11 @@ export class Controller {
 					// 1. Toggle to act mode if we are in plan mode
 					const { chatSettings } = await this.getStateToPostToWebview()
 					if (chatSettings.mode === "plan") {
-						await this.togglePlanActModeWithChatSettings({ mode: "act" })
+						// Provide the full ChatSettings object, including the default rate limit
+						await this.togglePlanActModeWithChatSettings({
+							mode: "act",
+							requestsPerMinuteLimit: chatSettings.requestsPerMinuteLimit, // Keep existing limit
+						})
 					}
 
 					// 2. download MCP

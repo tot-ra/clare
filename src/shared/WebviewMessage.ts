@@ -83,6 +83,7 @@ export interface WebviewMessage {
 		| "toggleFavoriteModel"
 		| "grpc_request"
 		| "toggleClineRule"
+		| "updateChatSettings"
 
 	// | "relaunchChromeDebugMode"
 	text?: string
