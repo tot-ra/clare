@@ -55,7 +55,9 @@ const SwitchOption = styled.div<{ isActive: boolean }>`
 	color: ${(props) => (props.isActive ? "white" : "var(--vscode-input-foreground)")};
 	z-index: 1;
 	transition: color 0.2s ease;
-	font-size: 12px;
+	// font-size: 12px;
+	padding: 10px;
+	display: flex;
 	width: 50%;
 	text-align: center;
 
@@ -100,7 +102,7 @@ const ButtonContainer = styled.div`
 	display: flex;
 	align-items: center;
 	gap: 3px;
-	font-size: 10px;
+	// font-size: 10px;
 	white-space: nowrap;
 	min-width: 0;
 	width: 100%;
@@ -177,7 +179,7 @@ const ModelDisplayButton = styled.a<{ isActive?: boolean; disabled?: boolean }>`
 	color: ${(props) => (props.isActive ? "var(--vscode-foreground)" : "var(--vscode-descriptionForeground)")};
 	display: flex;
 	align-items: center;
-	font-size: 10px;
+	// font-size: 10px;
 	outline: none;
 	user-select: none;
 	opacity: ${(props) => (props.disabled ? 0.5 : 1)};
@@ -209,15 +211,18 @@ const ModelButtonContent = styled.div`
 	white-space: nowrap;
 `
 
+
+	// font-size: var(--vscode-editor-font-size);
+	// line-height: var(--vscode-editor-line-height);
+
 const StyledDynamicTextArea = styled(DynamicTextArea)`
 	width: 100%;
 	box-sizing: border-box;
 	background-color: transparent;
 	color: var(--vscode-input-foreground);
 	border-radius: 2;
+	font-size: 1.1rem;
 	font-family: var(--vscode-font-family);
-	font-size: var(--vscode-editor-font-size);
-	line-height: var(--vscode-editor-line-height);
 	resize: none;
 	overflow-x: hidden;
 	overflow-y: scroll;
@@ -1104,8 +1109,8 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 							overflow: "hidden",
 							backgroundColor: "var(--vscode-input-background)",
 							fontFamily: "var(--vscode-font-family)",
-							fontSize: "var(--vscode-editor-font-size)",
-							lineHeight: "var(--vscode-editor-line-height)",
+							// fontSize: "var(--vscode-editor-font-size)",
+							// lineHeight: "var(--vscode-editor-line-height)",
 							borderRadius: 2,
 							borderLeft: 0,
 							borderRight: 0,
@@ -1201,7 +1206,7 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 										onSend()
 									}
 								}}
-								style={{ fontSize: 15 }}>
+								>
 								WORK
 							</VSCodeButton>
 						</div>

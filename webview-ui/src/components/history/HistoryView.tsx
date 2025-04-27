@@ -259,17 +259,36 @@ const HistoryView = ({ onDone }: HistoryViewProps) => {
 										padding: "12px 20px",
 										position: "relative",
 									}}>
+
+									<div
+										style={{
+											// fontSize: "var(--vscode-font-size)",
+											color: "var(--vscode-foreground)",
+											display: "-webkit-box",
+											WebkitLineClamp: 3,
+											WebkitBoxOrient: "vertical",
+											overflow: "hidden",
+											whiteSpace: "pre-wrap",
+											wordBreak: "break-word",
+											overflowWrap: "anywhere",
+										}}
+										dangerouslySetInnerHTML={{
+											__html: item.task,
+										}}
+									/>
+
 									<div
 										style={{
 											display: "flex",
 											justifyContent: "space-between",
 											alignItems: "center",
+											fontSize: "0.85rem",
 										}}>
 										<span
 											style={{
 												color: "var(--vscode-descriptionForeground)",
 												fontWeight: 500,
-												fontSize: "0.85em",
+												
 												textTransform: "uppercase",
 											}}>
 											{formatDate(item.ts)}
@@ -295,27 +314,13 @@ const HistoryView = ({ onDone }: HistoryViewProps) => {
 											</div>
 										</VSCodeButton>
 									</div>
-									<div
-										style={{
-											fontSize: "var(--vscode-font-size)",
-											color: "var(--vscode-foreground)",
-											display: "-webkit-box",
-											WebkitLineClamp: 3,
-											WebkitBoxOrient: "vertical",
-											overflow: "hidden",
-											whiteSpace: "pre-wrap",
-											wordBreak: "break-word",
-											overflowWrap: "anywhere",
-										}}
-										dangerouslySetInnerHTML={{
-											__html: item.task,
-										}}
-									/>
+									
 									<div
 										style={{
 											display: "flex",
 											flexDirection: "column",
 											gap: "4px",
+											fontSize: "0.8rem",
 										}}>
 										<div
 											style={{
@@ -347,7 +352,7 @@ const HistoryView = ({ onDone }: HistoryViewProps) => {
 													<i
 														className="codicon codicon-arrow-up"
 														style={{
-															fontSize: "12px",
+															// fontSize: "12px",
 															fontWeight: "bold",
 															marginBottom: "-2px",
 														}}
@@ -364,7 +369,7 @@ const HistoryView = ({ onDone }: HistoryViewProps) => {
 													<i
 														className="codicon codicon-arrow-down"
 														style={{
-															fontSize: "12px",
+															// fontSize: "12px",
 															fontWeight: "bold",
 															marginBottom: "-2px",
 														}}
@@ -400,7 +405,7 @@ const HistoryView = ({ onDone }: HistoryViewProps) => {
 													<i
 														className="codicon codicon-database"
 														style={{
-															fontSize: "12px",
+															// fontSize: "12px",
 															fontWeight: "bold",
 															marginBottom: "-1px",
 														}}
@@ -458,6 +463,8 @@ const HistoryView = ({ onDone }: HistoryViewProps) => {
 											</div>
 										)}
 									</div>
+
+									
 								</div>
 							</div>
 						)}

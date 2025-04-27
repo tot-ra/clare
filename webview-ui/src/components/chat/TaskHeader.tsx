@@ -265,7 +265,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 								color: "var(--vscode-badge-background)",
 								padding: "2px 4px",
 								borderRadius: "500px",
-								fontSize: "11px",
+								// fontSize: "11px",
 								fontWeight: 500,
 								display: "inline-block",
 								flexShrink: 0,
@@ -283,7 +283,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 							ref={textContainerRef}
 							style={{
 								marginTop: -2,
-								fontSize: "var(--vscode-font-size)",
+								// fontSize: "var(--vscode-font-size)",
 								overflowY: isTextExpanded ? "auto" : "hidden",
 								wordBreak: "break-word",
 								overflowWrap: "anywhere",
@@ -479,7 +479,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 										alignItems: "center",
 										gap: "8px",
 										color: "var(--vscode-editorWarning-foreground)",
-										fontSize: "11px",
+										// fontSize: "11px",
 									}}>
 									<i className="codicon codicon-warning" />
 									<span>
@@ -589,7 +589,7 @@ const DeleteButton: React.FC<{
 				display: "flex",
 				alignItems: "center",
 				gap: "3px",
-				fontSize: "10px",
+				// fontSize: "10px",
 				fontWeight: "bold",
 				opacity: 0.6,
 			}}>

@@ -25,7 +25,8 @@ html {
 
 body {
 	margin: 0;
-	line-height: 1.25;
+	line-height: 1;
+	font-size: 1.4rem !important; /* Override VSCode font size */
 }
 
 body.scrollable,

@@ -80,22 +80,11 @@ const HistoryPreview = ({ showHistoryView }: HistoryPreviewProps) => {
 					.map((item) => (
 						<div key={item.id} className="history-preview-item" onClick={() => handleHistorySelect(item.id)}>
 							<div style={{ padding: "12px" }}>
-								<div style={{ marginBottom: "8px" }}>
-									<span
-										style={{
-											color: "var(--vscode-descriptionForeground)",
-											fontWeight: 500,
-											fontSize: "0.85em",
-											textTransform: "uppercase",
-										}}>
-										{formatDate(item.ts)}
-									</span>
-								</div>
 								<div
 									style={{
-										fontSize: "var(--vscode-font-size)",
+										// fontSize: "var(--vscode-font-size)",
 										color: "var(--vscode-descriptionForeground)",
-										marginBottom: "8px",
+										marginBottom: "12px",
 										display: "-webkit-box",
 										WebkitLineClamp: 3,
 										WebkitBoxOrient: "vertical",
@@ -106,17 +95,29 @@ const HistoryPreview = ({ showHistoryView }: HistoryPreviewProps) => {
 									}}>
 									{item.task}
 								</div>
+								
 								<div
 									style={{
-										fontSize: "0.85em",
+										fontSize: "0.7em",
+										display:"flex",
+										justifyContent: "space-between",
 										color: "var(--vscode-descriptionForeground)",
 									}}>
+									<span
+										style={{
+											color: "var(--vscode-descriptionForeground)",
+											fontWeight: 500,
+											fontSize: "0.85em",
+											textTransform: "uppercase",
+										}}>
+										{formatDate(item.ts)}
+									</span>
+
 									<span>
 										Tokens: ↑{formatLargeNumber(item.tokensIn || 0)} ↓{formatLargeNumber(item.tokensOut || 0)}
 									</span>
 									{!!item.cacheWrites && (
 										<>
-											{" • "}
 											<span>
 												Cache: +{formatLargeNumber(item.cacheWrites || 0)} →{" "}
 												{formatLargeNumber(item.cacheReads || 0)}
@@ -125,7 +126,6 @@ const HistoryPreview = ({ showHistoryView }: HistoryPreviewProps) => {
 									)}
 									{!!item.totalCost && (
 										<>
-											{" • "}
 											<span>API Cost: ${item.totalCost?.toFixed(4)}</span>
 										</>
 									)}
