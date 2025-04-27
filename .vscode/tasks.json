@@ -5,6 +5,7 @@
 	"tasks": [
 		{
 			"label": "watch",
+			// Keep dependsOn as is, VSCode resolves labels correctly
 			"dependsOn": ["npm: build:webview", "npm: dev:webview", "npm: watch:tsc", "npm: watch:esbuild"],
 			"presentation": {
 				"reveal": "never"
@@ -23,8 +24,9 @@
 			"group": "build"
 		},
 		{
-			"type": "npm",
-			"script": "build:webview",
+			// Changed type to "shell" and added command
+			"type": "shell",
+			"command": "source ~/.nvm/nvm.sh && nvm install && nvm use && npm run build:webview",
 			"group": "build",
 			"problemMatcher": [],
 			"isBackground": true,
@@ -41,8 +43,9 @@
 			}
 		},
 		{
-			"type": "npm",
-			"script": "build:webview:test",
+			// Changed type to "shell" and added command
+			"type": "shell",
+			"command": "source ~/.nvm/nvm.sh && nvm install && nvm use && npm run build:webview:test",
 			"group": "build",
 			"problemMatcher": [],
 			"isBackground": true,
@@ -60,8 +63,9 @@
 			}
 		},
 		{
-			"type": "npm",
-			"script": "dev:webview",
+			// Changed type to "shell" and added command
+			"type": "shell",
+			"command": "source ~/.nvm/nvm.sh && nvm install && nvm use && npm run dev:webview",
 			"group": "build",
 			"problemMatcher": [
 				{
@@ -94,8 +98,9 @@
 			}
 		},
 		{
-			"type": "npm",
-			"script": "watch:esbuild",
+			// Changed type to "shell" and added command
+			"type": "shell",
+			"command": "source ~/.nvm/nvm.sh && nvm install && nvm use && npm run watch:esbuild",
 			"group": "build",
 			"problemMatcher": "$esbuild-watch",
 			"isBackground": true,
@@ -112,8 +117,9 @@
 			}
 		},
 		{
-			"type": "npm",
-			"script": "watch:esbuild:test",
+			// Changed type to "shell" and added command
+			"type": "shell",
+			"command": "source ~/.nvm/nvm.sh && nvm install && nvm use && npm run watch:esbuild:test",
 			"group": "build",
 			"problemMatcher": "$esbuild-watch",
 			"isBackground": true,
@@ -131,8 +137,9 @@
 			}
 		},
 		{
-			"type": "npm",
-			"script": "watch:tsc",
+			// Changed type to "shell" and added command
+			"type": "shell",
+			"command": "source ~/.nvm/nvm.sh && nvm install && nvm use && npm run watch:tsc",
 			"group": "build",
 			"problemMatcher": "$tsc-watch",
 			"isBackground": true,
@@ -144,8 +151,10 @@
 			}
 		},
 		{
-			"type": "npm",
-			"script": "watch-tests",
+			// Changed type to "shell" and added command
+			"type": "shell",
+			"command": "source ~/.nvm/nvm.sh && nvm install && nvm use && npm run watch-tests",
+			"label": "watch-tests", // Kept original label
 			"problemMatcher": "$tsc-watch",
 			"isBackground": true,
 			"presentation": {
@@ -156,7 +165,8 @@
 		},
 		{
 			"label": "tasks: watch-tests",
-			"dependsOn": ["npm: watch", "npm: watch-tests"],
+			// dependsOn should still work with labels
+			"dependsOn": ["npm: watch", "watch-tests"],
 			"problemMatcher": []
 		},
 		{
