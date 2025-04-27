@@ -101,7 +101,7 @@ const McpMarketplaceCard = ({ item, installedServers }: McpMarketplaceCardProps)
 							<h3
 								style={{
 									margin: 0,
-									fontSize: "13px",
+									fontSize: "1rem",
 									fontWeight: 600,
 								}}>
 								{item.name}
@@ -131,7 +131,7 @@ const McpMarketplaceCard = ({ item, installedServers }: McpMarketplaceCardProps)
 								display: "flex",
 								alignItems: "center",
 								gap: "8px",
-								fontSize: "12px",
+								fontSize: "0.9rem",
 								color: "var(--vscode-descriptionForeground)",
 								flexWrap: "wrap",
 								minWidth: 0,
@@ -158,7 +158,7 @@ const McpMarketplaceCard = ({ item, installedServers }: McpMarketplaceCardProps)
 									e.currentTarget.style.color = "var(--vscode-foreground)"
 								}}>
 								<div style={{ display: "flex", gap: "4px", alignItems: "center" }} ref={githubLinkRef}>
-									<span className="codicon codicon-github" style={{ fontSize: "14px" }} />
+									<span className="codicon codicon-github" style={{ fontSize: "1.1rem" }} />
 									<span
 										style={{
 											overflow: "hidden",
@@ -217,7 +217,7 @@ const McpMarketplaceCard = ({ item, installedServers }: McpMarketplaceCardProps)
 						</div>
 					)} */}
 
-					<p style={{ fontSize: "13px", margin: 0 }}>{item.description}</p>
+					<p style={{ fontSize: "1rem", margin: 0 }}>{item.description}</p>
 					<div
 						style={{
 							display: "flex",
@@ -236,7 +236,7 @@ const McpMarketplaceCard = ({ item, installedServers }: McpMarketplaceCardProps)
 						}}>
 						<span
 							style={{
-								fontSize: "10px",
+								fontSize: "0.85rem",
 								padding: "1px 4px",
 								borderRadius: "3px",
 								border: "1px solid color-mix(in srgb, var(--vscode-descriptionForeground) 50%, transparent)",
@@ -249,7 +249,7 @@ const McpMarketplaceCard = ({ item, installedServers }: McpMarketplaceCardProps)
 							<span
 								key={tag}
 								style={{
-									fontSize: "10px",
+									fontSize: "0.85rem",
 									padding: "1px 4px",
 									borderRadius: "3px",
 									border: "1px solid color-mix(in srgb, var(--vscode-descriptionForeground) 50%, transparent)",
@@ -281,7 +281,7 @@ const McpMarketplaceCard = ({ item, installedServers }: McpMarketplaceCardProps)
 }
 
 const StyledInstallButton = styled.button<{ $isInstalled?: boolean }>`
-	font-size: 12px;
+	font-size: 0.9rem;
 	font-weight: 500;
 	padding: 2px 6px;
 	border-radius: 2px;

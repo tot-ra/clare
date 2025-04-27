@@ -157,7 +157,7 @@ export const BrowserSettingsMenu = () => {
 				<i
 					className={`codicon ${getIconClass()}`}
 					style={{
-						fontSize: "14.5px",
+						fontSize: "1.1rem",
 						color: getIconColor(),
 					}}
 				/>
@@ -193,7 +193,7 @@ export const BrowserSettingsMenu = () => {
 			)}
 
 			<VSCodeButton appearance="icon" onClick={openBrowserSettings}>
-				<i className="codicon codicon-settings-gear" style={{ fontSize: "14.5px" }} />
+				<i className="codicon codicon-settings-gear" style={{ fontSize: "1.1rem" }} />
 			</VSCodeButton>
 		</div>
 	)

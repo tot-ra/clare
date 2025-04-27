@@ -62,11 +62,11 @@ const noScreenshotContainerStyle: CSSProperties = {
 	transform: "translate(-50%, -50%)",
 }
 const noScreenshotIconStyle: CSSProperties = {
-	fontSize: "80px",
+	fontSize: "5rem",
 	color: "var(--vscode-descriptionForeground)",
 }
 const consoleLogsContainerStyle: CSSProperties = { width: "100%" }
-const consoleLogsTextStyle: CSSProperties = { fontSize: "0.8em" }
+const consoleLogsTextStyle: CSSProperties = { fontSize: "0.85rem" }
 const paginationContainerStyle: CSSProperties = {
 	display: "flex",
 	justifyContent: "space-between",
@@ -371,7 +371,7 @@ const BrowserSessionRow = memo((props: BrowserSessionRowProps) => {
 							padding: "3px 5px",
 							minWidth: 0,
 							color: displayState.url ? "var(--vscode-input-foreground)" : "var(--vscode-descriptionForeground)",
-							fontSize: "12px",
+							fontSize: "0.9rem",
 						}}>
 						<div style={urlTextStyle}>{displayState.url || "http"}</div>
 					</div>

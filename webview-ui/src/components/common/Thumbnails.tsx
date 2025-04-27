@@ -84,7 +84,7 @@ const Thumbnails = ({ images, style, setImages, onHeightChange }: ThumbnailsProp
 								className="codicon codicon-close"
 								style={{
 									color: "var(--vscode-foreground)",
-									fontSize: 10,
+									fontSize: "0.85rem",
 									fontWeight: "bold",
 								}}></span>
 						</div>

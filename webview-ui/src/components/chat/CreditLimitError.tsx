@@ -35,7 +35,7 @@ const CreditLimitError: React.FC<CreditLimitErrorProps> = ({ currentBalance, tot
 					width: "100%",
 					marginBottom: "8px",
 				}}>
-				<span className="codicon codicon-credit-card" style={{ fontSize: "14px", marginRight: "6px" }} />
+				<span className="codicon codicon-credit-card" style={{ fontSize: "1.1em", marginRight: "6px" }} />
 				Buy Credits
 			</VSCodeButtonLink>
 
@@ -50,7 +50,7 @@ const CreditLimitError: React.FC<CreditLimitErrorProps> = ({ currentBalance, tot
 				style={{
 					width: "100%",
 				}}>
-				<span className="codicon codicon-refresh" style={{ fontSize: "14px", marginRight: "6px" }} />
+				<span className="codicon codicon-refresh" style={{ fontSize: "1.1em", marginRight: "6px" }} />
 				Retry Request
 			</VSCodeButton>
 		</div>

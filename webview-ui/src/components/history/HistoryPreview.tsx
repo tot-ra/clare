@@ -66,7 +66,7 @@ const HistoryPreview = ({ showHistoryView }: HistoryPreviewProps) => {
 				<span
 					style={{
 						fontWeight: 500,
-						fontSize: "0.85em",
+						fontSize: "0.9rem",
 						textTransform: "uppercase",
 					}}>
 					Recent Tasks
@@ -82,7 +82,7 @@ const HistoryPreview = ({ showHistoryView }: HistoryPreviewProps) => {
 							<div style={{ padding: "12px" }}>
 								<div
 									style={{
-										// fontSize: "var(--vscode-font-size)",
+										fontSize: "1.1rem",
 										color: "var(--vscode-descriptionForeground)",
 										marginBottom: "12px",
 										display: "-webkit-box",
@@ -98,7 +98,7 @@ const HistoryPreview = ({ showHistoryView }: HistoryPreviewProps) => {
 
 								<div
 									style={{
-										fontSize: "0.7em",
+										fontSize: "0.9rem",
 										display: "flex",
 										justifyContent: "space-between",
 										color: "var(--vscode-descriptionForeground)",
@@ -107,7 +107,6 @@ const HistoryPreview = ({ showHistoryView }: HistoryPreviewProps) => {
 										style={{
 											color: "var(--vscode-descriptionForeground)",
 											fontWeight: 500,
-											fontSize: "0.85em",
 											textTransform: "uppercase",
 										}}>
 										{formatDate(item.ts)}
@@ -147,7 +146,6 @@ const HistoryPreview = ({ showHistoryView }: HistoryPreviewProps) => {
 						}}>
 						<div
 							style={{
-								fontSize: "var(--vscode-font-size)",
 								color: "var(--vscode-descriptionForeground)",
 							}}>
 							View all history

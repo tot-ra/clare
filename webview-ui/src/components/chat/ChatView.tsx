@@ -908,7 +908,7 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 									scrollToBottomSmooth()
 									disableAutoScrollRef.current = false
 								}}>
-								<span className="codicon codicon-chevron-down" style={{ fontSize: "18px" }}></span>
+								<span className="codicon codicon-chevron-down" style={{ fontSize: "1.3em" }}></span>
 							</ScrollToBottomButton>
 						</div>
 					) : (
@@ -972,7 +972,7 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 
 			<AutoApproveMenu
 				style={{
-					fontSize: "10px",
+					fontSize: "0.85rem",
 					// marginBottom: -2,
 					flex: "0 1 auto", // flex-grow: 0, flex-shrink: 1, flex-basis: auto
 					minHeight: 0,

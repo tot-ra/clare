@@ -10,7 +10,7 @@ const InstalledServersView = () => {
 			<div
 				style={{
 					color: "var(--vscode-foreground)",
-					fontSize: "13px",
+					fontSize: "1rem",
 					marginBottom: "16px",
 					marginTop: "5px",
 				}}>
@@ -51,7 +51,7 @@ const InstalledServersView = () => {
 								text: "cline.mcp",
 							})
 						}}
-						style={{ fontSize: "12px" }}>
+						style={{ fontSize: "0.9rem" }}>
 						Advanced MCP Settings
 					</VSCodeLink>
 				</div>

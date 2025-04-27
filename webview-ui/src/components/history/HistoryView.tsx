@@ -185,7 +185,7 @@ const HistoryView = ({ onDone }: HistoryViewProps) => {
 								slot="start"
 								className="codicon codicon-search"
 								style={{
-									fontSize: 13,
+									fontSize: "1rem",
 									marginTop: 2.5,
 									opacity: 0.8,
 								}}></div>
@@ -219,22 +219,6 @@ const HistoryView = ({ onDone }: HistoryViewProps) => {
 					</div>
 				</div>
 				<div style={{ flexGrow: 1, overflowY: "auto", margin: 0 }}>
-					{/* {presentableTasks.length === 0 && (
-						<div
-							style={{
-								
-								alignItems: "center",
-								fontStyle: "italic",
-								color: "var(--vscode-descriptionForeground)",
-								textAlign: "center",
-								padding: "0px 10px",
-							}}>
-							<span
-								className="codicon codicon-robot"
-								style={{ fontSize: "60px", marginBottom: "10px" }}></span>
-							<div>Start a task to see it here</div>
-						</div>
-					)} */}
 					<Virtuoso
 						style={{
 							flexGrow: 1,
@@ -305,7 +289,7 @@ const HistoryView = ({ onDone }: HistoryViewProps) => {
 													display: "flex",
 													alignItems: "center",
 													gap: "3px",
-													fontSize: "11px",
+													fontSize: "0.85rem",
 													// fontWeight: "bold",
 												}}>
 												<span className="codicon codicon-trash"></span>
@@ -421,7 +405,7 @@ const HistoryView = ({ onDone }: HistoryViewProps) => {
 													<i
 														className="codicon codicon-arrow-right"
 														style={{
-															fontSize: "12px",
+															fontSize: "0.9rem",
 															fontWeight: "bold",
 															marginBottom: 0,
 														}}
@@ -495,7 +479,7 @@ const ExportButton = ({ itemId }: { itemId: string }) => (
 			e.stopPropagation()
 			vscode.postMessage({ type: "exportTaskWithId", text: itemId })
 		}}>
-		<div style={{ fontSize: "11px", fontWeight: 500, opacity: 1 }}>EXPORT</div>
+		<div style={{ fontSize: "0.85rem", fontWeight: 500, opacity: 1 }}>EXPORT</div>
 	</VSCodeButton>
 )
 

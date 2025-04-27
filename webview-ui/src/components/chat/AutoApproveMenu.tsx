@@ -308,7 +308,7 @@ const AutoApproveMenu = ({ style }: AutoApproveMenuProps) => {
 						style={{
 							marginBottom: "10px",
 							color: getAsVar(VSC_DESCRIPTION_FOREGROUND),
-							fontSize: "12px",
+							fontSize: "0.9rem",
 						}}>
 						Auto-approve allows Cline to perform the following actions without asking for permission. Please use with
 						caution and only enable if you understand the risks.
@@ -345,7 +345,7 @@ const AutoApproveMenu = ({ style }: AutoApproveMenuProps) => {
 											style={{
 												marginLeft: "28px",
 												color: getAsVar(VSC_DESCRIPTION_FOREGROUND),
-												fontSize: "12px",
+												fontSize: "0.9rem",
 											}}>
 											{action.description}
 										</div>
@@ -371,7 +371,7 @@ const AutoApproveMenu = ({ style }: AutoApproveMenuProps) => {
 									style={{
 										marginLeft: "28px",
 										color: getAsVar(VSC_DESCRIPTION_FOREGROUND),
-										fontSize: "12px",
+										fontSize: "0.9rem",
 									}}>
 									{action.description}
 								</div>
@@ -420,7 +420,7 @@ const AutoApproveMenu = ({ style }: AutoApproveMenuProps) => {
 					<div
 						style={{
 							color: getAsVar(VSC_DESCRIPTION_FOREGROUND),
-							fontSize: "12px",
+							fontSize: "0.9rem",
 							marginBottom: "10px",
 						}}>
 						Cline will automatically make this many API requests before asking for approval to proceed with the task.
@@ -438,7 +438,7 @@ const AutoApproveMenu = ({ style }: AutoApproveMenuProps) => {
 							style={{
 								marginLeft: "28px",
 								color: getAsVar(VSC_DESCRIPTION_FOREGROUND),
-								fontSize: "12px",
+								fontSize: "0.9rem",
 							}}>
 							Receive system notifications when Cline requires approval to proceed or when a task is completed.
 						</div>

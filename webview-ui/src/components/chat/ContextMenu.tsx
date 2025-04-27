@@ -96,7 +96,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
 							<span style={{ lineHeight: "1.2" }}>{option.label}</span>
 							<span
 								style={{
-									fontSize: "0.85em",
+									fontSize: "0.85rem",
 									opacity: 0.7,
 									whiteSpace: "nowrap",
 									overflow: "hidden",
@@ -193,7 +193,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
 							gap: "8px",
 							opacity: 0.7,
 						}}>
-						<i className="codicon codicon-loading codicon-modifier-spin" style={{ fontSize: "14px" }} />
+						<i className="codicon codicon-loading codicon-modifier-spin" style={{ fontSize: "1.1em" }} />
 						<span>Searching...</span>
 					</div>
 				)}
@@ -231,7 +231,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
 								style={{
 									marginRight: "8px",
 									flexShrink: 0,
-									fontSize: "14px",
+									fontSize: "1.1em",
 								}}
 							/>
 							{renderOptionContent(option)}
@@ -243,7 +243,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
 								<i
 									className="codicon codicon-chevron-right"
 									style={{
-										fontSize: "14px",
+										fontSize: "1.1em",
 										flexShrink: 0,
 										marginLeft: 8,
 									}}
@@ -258,7 +258,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
 							<i
 								className="codicon codicon-add"
 								style={{
-									fontSize: "14px",
+									fontSize: "1.1em",
 									flexShrink: 0,
 									marginLeft: 8,
 								}}

@@ -119,7 +119,7 @@ export const ModelDescriptionMarkdown = memo(
 							/>
 							<VSCodeLink
 								style={{
-									fontSize: "inherit",
+									fontSize: "1rem",
 									paddingRight: 0,
 									paddingLeft: 3,
 									backgroundColor: isPopup ? CODE_BLOCK_BG_COLOR : "var(--vscode-sideBar-background)",

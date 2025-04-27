@@ -220,7 +220,7 @@ const StyledDynamicTextArea = styled(DynamicTextArea)`
 	background-color: transparent;
 	color: var(--vscode-input-foreground);
 	border-radius: 2;
-	font-size: 1.1rem;
+	font-size: calc(var(--vscode-font-size) + 5px);
 	font-family: var(--vscode-font-family);
 	resize: none;
 	overflow-x: hidden;
@@ -1108,7 +1108,6 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 							overflow: "hidden",
 							backgroundColor: "var(--vscode-input-background)",
 							fontFamily: "var(--vscode-font-family)",
-							// fontSize: "var(--vscode-editor-font-size)",
 							// lineHeight: "var(--vscode-editor-line-height)",
 							borderRadius: 2,
 							borderLeft: 0,
@@ -1193,7 +1192,7 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 								}}
 								style={{
 									marginRight: 5.5,
-									fontSize: 16.5,
+									fontSize: "1.2em",
 								}}
 							/> */}
 							<VSCodeButton
@@ -1221,10 +1220,9 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 							onClick={handleContextButtonClick}
 							style={{ padding: "0px 0px", height: "20px" }}>
 							<ButtonContainer>
-								<span className="flex items-center" style={{ fontSize: "13px", marginBottom: 1 }}>
+								<span className="flex items-center" style={{ fontSize: "1rem", marginBottom: 1 }}>
 									@
 								</span>
-								{/* {showButtonText && <span style={{ fontSize: "10px" }}>Context</span>} */}
 							</ButtonContainer>
 						</VSCodeButton>
 
@@ -1242,15 +1240,14 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 							<ButtonContainer>
 								<span
 									className="codicon codicon-device-camera flex items-center"
-									style={{ fontSize: "14px", marginBottom: -3 }}
+									style={{ fontSize: "1.1em", marginBottom: -3 }}
 								/>
-								{/* {showButtonText && <span style={{ fontSize: "10px" }}>Images</span>} */}
 							</ButtonContainer>
 						</VSCodeButton>
 						{/* <ServersToggleModal /> */}
 						<ClineRulesToggleModal />
 
-						{/* <ModelContainer ref={modelSelectorRef}>
+						<ModelContainer ref={modelSelectorRef}>
 							<ModelButtonWrapper ref={buttonRef}>
 								<ModelDisplayButton
 									role="button"
@@ -1282,7 +1279,7 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 									/>
 								</ModelSelectorTooltip>
 							)}
-						</ModelContainer> */}
+						</ModelContainer>
 					</ButtonGroup>
 				</ControlsContainer>
 			</div>

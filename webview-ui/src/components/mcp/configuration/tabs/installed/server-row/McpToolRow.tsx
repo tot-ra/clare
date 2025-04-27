@@ -52,7 +52,7 @@ const McpToolRow = ({ tool, serverName }: McpToolRowProps) => {
 						marginLeft: "0px",
 						marginTop: "4px",
 						opacity: 0.8,
-						fontSize: "12px",
+						fontSize: "0.9rem",
 					}}>
 					{tool.description}
 				</div>
@@ -63,7 +63,7 @@ const McpToolRow = ({ tool, serverName }: McpToolRowProps) => {
 					<div
 						style={{
 							marginTop: "8px",
-							fontSize: "12px",
+							fontSize: "0.9rem",
 							border: "1px solid color-mix(in srgb, var(--vscode-descriptionForeground) 30%, transparent)",
 							borderRadius: "3px",
 							padding: "8px",
@@ -72,7 +72,7 @@ const McpToolRow = ({ tool, serverName }: McpToolRowProps) => {
 							style={{
 								marginBottom: "4px",
 								opacity: 0.8,
-								fontSize: "11px",
+								fontSize: "0.85rem",
 								textTransform: "uppercase",
 							}}>
 							Parameters

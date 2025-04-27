@@ -18,7 +18,7 @@ const containerStyle: CSSProperties = {
 const closeIconStyle: CSSProperties = { position: "absolute", top: "8px", right: "8px" }
 const h3TitleStyle: CSSProperties = { margin: "0 0 8px" }
 const ulStyle: CSSProperties = { margin: "0 0 8px", paddingLeft: "12px" }
-const accountIconStyle: CSSProperties = { fontSize: 11 }
+const accountIconStyle: CSSProperties = { fontSize: "0.85rem" }
 const hrStyle: CSSProperties = {
 	height: "1px",
 	background: getAsVar(VSC_DESCRIPTION_FOREGROUND),

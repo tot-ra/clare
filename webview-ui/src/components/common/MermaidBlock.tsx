@@ -41,7 +41,7 @@ mermaid.initialize({
 	theme: "dark",
 	themeVariables: {
 		...MERMAID_THEME,
-		fontSize: "16px",
+		fontSize: "1.2rem",
 		fontFamily: "var(--vscode-font-family, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif)",
 
 		// Additional styling

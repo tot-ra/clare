@@ -225,7 +225,7 @@ export const BrowserSettingsSection: React.FC = () => {
 		<div
 			id="browser-settings-section"
 			style={{ marginBottom: 20, borderTop: "1px solid var(--vscode-panel-border)", paddingTop: 15 }}>
-			<h3 style={{ color: "var(--vscode-foreground)", margin: "0 0 10px 0", fontSize: "14px" }}>Browser Settings</h3>
+			<h3 style={{ color: "var(--vscode-foreground)", margin: "0 0 10px 0", fontSize: "1.1rem" }}>Browser Settings</h3>
 			<div style={{ marginBottom: 15 }}>
 				<div style={{ marginBottom: 8 }}>
 					<label style={{ fontWeight: "500", display: "block", marginBottom: 5 }}>Viewport size</label>
@@ -250,7 +250,7 @@ export const BrowserSettingsSection: React.FC = () => {
 				</div>
 				<p
 					style={{
-						fontSize: "12px",
+						fontSize: "0.9rem",
 						color: "var(--vscode-descriptionForeground)",
 						margin: 0,
 					}}>
@@ -273,7 +273,7 @@ export const BrowserSettingsSection: React.FC = () => {
 				</div>
 				<p
 					style={{
-						fontSize: "12px",
+						fontSize: "0.9rem",
 						color: "var(--vscode-descriptionForeground)",
 						margin: "0 0 6px 0px",
 					}}>
@@ -318,7 +318,7 @@ export const BrowserSettingsSection: React.FC = () => {
 										? "var(--vscode-terminal-ansiGreen)"
 										: "var(--vscode-terminal-ansiRed)",
 									borderRadius: "3px",
-									fontSize: "11px",
+									fontSize: "0.85rem",
 									whiteSpace: "pre-wrap",
 									wordBreak: "break-word",
 								}}>
@@ -328,7 +328,7 @@ export const BrowserSettingsSection: React.FC = () => {
 
 						<p
 							style={{
-								fontSize: "12px",
+								fontSize: "0.9rem",
 								color: "var(--vscode-descriptionForeground)",
 								margin: 0,
 							}}></p>
@@ -347,13 +347,13 @@ const StatusContainer = styled.div`
 `
 
 const StatusText = styled.span`
-	font-size: 12px;
+	font-size: 0.9rem;
 	margin-left: 4px;
 `
 
 const CheckIcon = styled.i`
 	color: var(--vscode-terminal-ansiGreen);
-	font-size: 14px;
+	font-size: 1.1em;
 `
 
 const Spinner = styled.div`

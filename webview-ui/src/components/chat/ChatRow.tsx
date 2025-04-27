@@ -68,7 +68,7 @@ const getIconSpan = (iconName: string, color: string) => (
 			className={`codicon codicon-${iconName}`}
 			style={{
 				color,
-				fontSize: 16,
+				fontSize: "1.2rem",
 				marginBottom: "-1.5px",
 			}}></span>
 	</div>
@@ -570,7 +570,7 @@ export const ChatRowContent = ({
 								<span
 									className={`codicon codicon-link-external`}
 									style={{
-										fontSize: 13.5,
+										fontSize: "1rem",
 										margin: "1px 0",
 									}}></span>
 							</div>
@@ -730,7 +730,7 @@ export const ChatRowContent = ({
 									padding: `2px 8px ${isExpanded ? 0 : 8}px 8px`,
 								}}>
 								<span className={`codicon codicon-chevron-${isExpanded ? "down" : "right"}`}></span>
-								<span style={{ fontSize: "0.8em" }}>Command Output</span>
+								<span style={{ fontSize: "0.85rem" }}>Command Output</span>
 							</div>
 							{isExpanded && <CodeBlock source={`${"```"}shell\n${output}\n${"```"}`} />}
 						</div>
@@ -743,7 +743,7 @@ export const ChatRowContent = ({
 							alignItems: "center",
 							gap: 10,
 							padding: 8,
-							fontSize: "12px",
+							fontSize: "0.9rem",
 							color: "var(--vscode-editorWarning-foreground)",
 						}}>
 						<i className="codicon codicon-warning"></i>
@@ -833,7 +833,7 @@ export const ChatRowContent = ({
 										style={{
 											marginBottom: "4px",
 											opacity: 0.8,
-											fontSize: "12px",
+											fontSize: "0.9rem",
 											textTransform: "uppercase",
 										}}>
 										Arguments
@@ -1114,7 +1114,7 @@ export const ChatRowContent = ({
 									backgroundColor: "var(--vscode-textBlockQuote-background)",
 									padding: 8,
 									borderRadius: 3,
-									fontSize: 12,
+									fontSize: "0.9rem",
 									color: "var(--vscode-foreground)",
 									opacity: 0.8,
 								}}>
@@ -1128,7 +1128,7 @@ export const ChatRowContent = ({
 										className="codicon codicon-warning"
 										style={{
 											marginRight: 8,
-											fontSize: 14,
+											fontSize: "1.1em",
 											color: "var(--vscode-descriptionForeground)",
 										}}></i>
 									<span style={{ fontWeight: 500 }}>Diff Edit Mismatch</span>
@@ -1147,7 +1147,7 @@ export const ChatRowContent = ({
 									backgroundColor: "rgba(255, 191, 0, 0.1)",
 									padding: 8,
 									borderRadius: 3,
-									fontSize: 12,
+									fontSize: "0.9rem",
 								}}>
 								<div
 									style={{
@@ -1159,7 +1159,7 @@ export const ChatRowContent = ({
 										className="codicon codicon-error"
 										style={{
 											marginRight: 8,
-											fontSize: 18,
+											fontSize: "1.3em",
 											color: "#FFA500",
 										}}></i>
 									<span
@@ -1192,7 +1192,7 @@ export const ChatRowContent = ({
 								alignItems: "center",
 								color: "var(--vscode-foreground)",
 								opacity: 0.7,
-								fontSize: 12,
+								fontSize: "0.9rem",
 								padding: "4px 0",
 							}}>
 							<i className="codicon codicon-book" style={{ marginRight: 6 }} />
@@ -1276,7 +1276,7 @@ export const ChatRowContent = ({
 										className="codicon codicon-warning"
 										style={{
 											marginRight: 8,
-											fontSize: 18,
+											fontSize: "1.3em",
 											color: "#FFA500",
 										}}></i>
 									<span

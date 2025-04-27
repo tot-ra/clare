@@ -67,7 +67,12 @@ const ClineRulesToggleModal: React.FC = () => {
 					onClick={() => setIsVisible(!isVisible)}
 					style={{ padding: "0px 0px", height: "20px" }}>
 					<div className="flex items-center gap-1 text-xs whitespace-nowrap min-w-0 w-full">
-						<span className="codicon codicon-law flex items-center" style={{ fontSize: "12.5px", marginBottom: 1 }} />
+						<div className="flex items-center gap-1">
+							<span
+								className="codicon codicon-law flex items-center"
+								style={{ fontSize: "1rem", marginBottom: 1 }}
+							/>
+						</div>
 					</div>
 				</VSCodeButton>
 			</div>

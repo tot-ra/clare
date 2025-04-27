@@ -12,7 +12,7 @@ const McpSubmitCard = () => {
 				borderRadius: "6px",
 			}}>
 			{/* Icon */}
-			<i className="codicon codicon-add" style={{ fontSize: "18px" }} />
+			<i className="codicon codicon-add" style={{ fontSize: "1.3em" }} />
 
 			{/* Content */}
 			<div
@@ -27,13 +27,13 @@ const McpSubmitCard = () => {
 				<h3
 					style={{
 						margin: 0,
-						fontSize: "14px",
+						fontSize: "1.1rem",
 						fontWeight: 600,
 						color: "var(--vscode-foreground)",
 					}}>
 					Submit MCP Server
 				</h3>
-				<p style={{ fontSize: "13px", margin: 0, color: "var(--vscode-descriptionForeground)" }}>
+				<p style={{ fontSize: "1rem", margin: 0, color: "var(--vscode-descriptionForeground)" }}>
 					Help others discover great MCP servers by submitting an issue to{" "}
 					<a href="https://github.com/cline/mcp-marketplace">github.com/cline/mcp-marketplace</a>
 				</p>

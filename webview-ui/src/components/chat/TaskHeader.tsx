@@ -265,7 +265,6 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 								color: "var(--vscode-badge-background)",
 								padding: "2px 4px",
 								borderRadius: "500px",
-								// fontSize: "11px",
 								fontWeight: 500,
 								display: "inline-block",
 								flexShrink: 0,
@@ -283,7 +282,6 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 							ref={textContainerRef}
 							style={{
 								marginTop: -2,
-								// fontSize: "var(--vscode-font-size)",
 								overflowY: isTextExpanded ? "auto" : "hidden",
 								wordBreak: "break-word",
 								overflowWrap: "anywhere",
@@ -376,7 +374,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 										<i
 											className="codicon codicon-arrow-up"
 											style={{
-												fontSize: "12px",
+												fontSize: "0.9rem",
 												fontWeight: "bold",
 												marginBottom: "-2px",
 											}}
@@ -392,7 +390,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 										<i
 											className="codicon codicon-arrow-down"
 											style={{
-												fontSize: "12px",
+												fontSize: "0.9rem",
 												fontWeight: "bold",
 												marginBottom: "-2px",
 											}}
@@ -426,7 +424,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 											<i
 												className="codicon codicon-database"
 												style={{
-													fontSize: "12px",
+													fontSize: "0.9rem",
 													fontWeight: "bold",
 													marginBottom: "-1px",
 												}}
@@ -442,7 +440,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 											<i
 												className="codicon codicon-arrow-right"
 												style={{
-													fontSize: "12px",
+													fontSize: "0.9rem",
 													fontWeight: "bold",
 													marginBottom: 0,
 												}}
@@ -479,7 +477,6 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 										alignItems: "center",
 										gap: "8px",
 										color: "var(--vscode-editorWarning-foreground)",
-										// fontSize: "11px",
 									}}>
 									<i className="codicon codicon-warning" />
 									<span>
@@ -542,7 +539,7 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 						{(Credits || 0) < 1 && (
 							<>
 								{" "}
-								<VSCodeLink style={{ fontSize: "0.9em" }} href={getAddCreditsUrl(vscodeUriScheme)}>
+								<VSCodeLink style={{ fontSize: "0.9rem" }} href={getAddCreditsUrl(vscodeUriScheme)}>
 									(get more?)
 								</VSCodeLink>
 							</>
@@ -589,7 +586,6 @@ const DeleteButton: React.FC<{
 				display: "flex",
 				alignItems: "center",
 				gap: "3px",
-				// fontSize: "10px",
 				fontWeight: "bold",
 				opacity: 0.6,
 			}}>
@@ -598,19 +594,5 @@ const DeleteButton: React.FC<{
 		</div>
 	</VSCodeButton>
 )
-
-// const ExportButton = () => (
-// 	<VSCodeButton
-// 		appearance="icon"
-// 		onClick={() => vscode.postMessage({ type: "exportCurrentTask" })}
-// 		style={
-// 			{
-// 				// marginBottom: "-2px",
-// 				// marginRight: "-2.5px",
-// 			}
-// 		}>
-// 		<div style={{ fontSize: "10.5px", fontWeight: "bold", opacity: 0.6 }}>EXPORT</div>
-// 	</VSCodeButton>
-// )
 
 export default memo(TaskHeader)

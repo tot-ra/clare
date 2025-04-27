@@ -10,7 +10,7 @@ const OptionButton = styled.button<{ isSelected?: boolean; isNotSelectable?: boo
 	border-radius: 2px;
 	cursor: ${(props) => (props.isNotSelectable ? "default" : "pointer")};
 	text-align: left;
-	font-size: 12px;
+	font-size: 0.9rem;
 
 	${(props) =>
 		!props.isNotSelectable &&
@@ -46,9 +46,6 @@ export const OptionsButtons = ({
 				paddingTop: 15,
 				// marginTop: "22px",
 			}}>
-			{/* <div style={{ color: "var(--vscode-descriptionForeground)", fontSize: "11px", textTransform: "uppercase" }}>
-				SELECT ONE:
-			</div> */}
 			{options.map((option, index) => (
 				<OptionButton
 					key={index}

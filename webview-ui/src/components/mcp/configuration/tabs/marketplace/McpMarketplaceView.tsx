@@ -148,7 +148,7 @@ const McpMarketplaceView = () => {
 						slot="start"
 						className="codicon codicon-search"
 						style={{
-							fontSize: 13,
+							fontSize: "1rem",
 							opacity: 0.8,
 						}}
 					/>
@@ -178,7 +178,7 @@ const McpMarketplaceView = () => {
 					}}>
 					<span
 						style={{
-							fontSize: "11px",
+							fontSize: "0.85rem",
 							color: "var(--vscode-descriptionForeground)",
 							textTransform: "uppercase",
 							fontWeight: 500,
@@ -216,7 +216,7 @@ const McpMarketplaceView = () => {
 					}}>
 					<span
 						style={{
-							fontSize: "11px",
+							fontSize: "0.85rem",
 							color: "var(--vscode-descriptionForeground)",
 							textTransform: "uppercase",
 							fontWeight: 500,

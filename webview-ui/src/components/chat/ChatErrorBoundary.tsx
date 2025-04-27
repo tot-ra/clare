@@ -117,7 +117,7 @@ export class ErrorAfterDelay extends React.Component<ErrorAfterDelayProps, Error
 					background: "rgba(255, 0, 0, 0.5)",
 					color: "var(--vscode-errorForeground)",
 					padding: "2px 5px",
-					fontSize: "12px",
+					fontSize: "0.9rem",
 					borderRadius: "0 0 0 4px",
 					zIndex: 100,
 				}}>

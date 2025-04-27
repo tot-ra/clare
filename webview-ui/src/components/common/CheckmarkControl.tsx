@@ -125,7 +125,7 @@ export const CheckmarkControl = ({ messageTs, isCheckpointCheckedOut }: Checkmar
 				className="codicon codicon-bookmark"
 				style={{
 					color: isCheckpointCheckedOut ? "var(--vscode-textLink-foreground)" : "var(--vscode-descriptionForeground)",
-					fontSize: "12px",
+					fontSize: "0.9rem",
 					flexShrink: 0,
 				}}
 			/>
