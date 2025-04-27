@@ -10,3 +10,6 @@ Clare is a hard fork of Cline and it includes these differences:
 - **API ratelimiting** (you can set for example 2 req/min max). Useful for free models like google gemini
 
 ![](./docs/clare.jpg)
+
+
+<img width="1066" alt="Screenshot 2025-04-27 at 03 56 36" src="https://github.com/user-attachments/assets/1e0f2344-b217-4c4b-8de9-0ed8024babea" />
