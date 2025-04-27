@@ -211,9 +211,8 @@ const ModelButtonContent = styled.div`
 	white-space: nowrap;
 `
 
-
-	// font-size: var(--vscode-editor-font-size);
-	// line-height: var(--vscode-editor-line-height);
+// font-size: var(--vscode-editor-font-size);
+// line-height: var(--vscode-editor-line-height);
 
 const StyledDynamicTextArea = styled(DynamicTextArea)`
 	width: 100%;
@@ -1205,8 +1204,7 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 										setIsTextAreaFocused(false)
 										onSend()
 									}
-								}}
-								>
+								}}>
 								WORK
 							</VSCodeButton>
 						</div>

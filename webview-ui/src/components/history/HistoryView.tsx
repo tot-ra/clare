@@ -259,7 +259,6 @@ const HistoryView = ({ onDone }: HistoryViewProps) => {
 										padding: "12px 20px",
 										position: "relative",
 									}}>
-
 									<div
 										style={{
 											// fontSize: "var(--vscode-font-size)",
@@ -288,7 +287,7 @@ const HistoryView = ({ onDone }: HistoryViewProps) => {
 											style={{
 												color: "var(--vscode-descriptionForeground)",
 												fontWeight: 500,
-												
+
 												textTransform: "uppercase",
 											}}>
 											{formatDate(item.ts)}
@@ -314,7 +313,7 @@ const HistoryView = ({ onDone }: HistoryViewProps) => {
 											</div>
 										</VSCodeButton>
 									</div>
-									
+
 									<div
 										style={{
 											display: "flex",
@@ -463,8 +462,6 @@ const HistoryView = ({ onDone }: HistoryViewProps) => {
 											</div>
 										)}
 									</div>
-
-									
 								</div>
 							</div>
 						)}

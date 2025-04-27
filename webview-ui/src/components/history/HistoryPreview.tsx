@@ -95,11 +95,11 @@ const HistoryPreview = ({ showHistoryView }: HistoryPreviewProps) => {
 									}}>
 									{item.task}
 								</div>
-								
+
 								<div
 									style={{
 										fontSize: "0.7em",
-										display:"flex",
+										display: "flex",
 										justifyContent: "space-between",
 										color: "var(--vscode-descriptionForeground)",
 									}}>
