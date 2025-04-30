@@ -120,12 +120,13 @@ const HistoryView = ({ onDone }: HistoryViewProps) => {
 					.history-item:hover {
 						background-color: var(--vscode-list-hoverBackground);
 					}
-					.delete-button, .export-button {
+					.delete-button, .export-button, .retry-button {
 						opacity: 0;
 						pointer-events: none;
 					}
 					.history-item:hover .delete-button,
-					.history-item:hover .export-button {
+					.history-item:hover .export-button,
+					.history-item:hover .retry-button {
 						opacity: 1;
 						pointer-events: auto;
 					}
@@ -276,26 +277,45 @@ const HistoryView = ({ onDone }: HistoryViewProps) => {
 											}}>
 											{formatDate(item.ts)}
 										</span>
-										<VSCodeButton
-											appearance="icon"
-											onClick={(e) => {
-												e.stopPropagation()
-												handleDeleteHistoryItem(item.id)
-											}}
-											className="delete-button"
-											style={{ padding: "0px 0px" }}>
-											<div
-												style={{
-													display: "flex",
-													alignItems: "center",
-													gap: "3px",
-													fontSize: "0.85rem",
-													// fontWeight: "bold",
-												}}>
-												<span className="codicon codicon-trash"></span>
-												{formatSize(item.size)}
-											</div>
-										</VSCodeButton>
+										<div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+											<VSCodeButton
+												appearance="icon"
+												onClick={(e) => {
+													e.stopPropagation()
+													vscode.postMessage({ type: "retryTask", text: item.id })
+												}}
+												className="retry-button"
+												style={{ padding: "0px 0px" }}>
+												<div
+													style={{
+														display: "flex",
+														alignItems: "center",
+														gap: "3px",
+														fontSize: "0.85rem",
+													}}>
+													<span className="codicon codicon-refresh"></span>
+												</div>
+											</VSCodeButton>
+											<VSCodeButton
+												appearance="icon"
+												onClick={(e) => {
+													e.stopPropagation()
+													handleDeleteHistoryItem(item.id)
+												}}
+												className="delete-button"
+												style={{ padding: "0px 0px" }}>
+												<div
+													style={{
+														display: "flex",
+														alignItems: "center",
+														gap: "3px",
+														fontSize: "0.85rem",
+													}}>
+													<span className="codicon codicon-trash"></span>
+													{formatSize(item.size)}
+												</div>
+											</VSCodeButton>
+										</div>
 									</div>
 
 									<div

@@ -47,6 +47,17 @@ const HistoryPreview = ({ showHistoryView }: HistoryPreviewProps) => {
 						opacity: 1;
 						pointer-events: auto;
 					}
+					.history-preview-item .retry-button {
+						opacity: 0;
+						pointer-events: none;
+						position: absolute;
+						top: 8px;
+						right: 8px;
+					}
+					.history-preview-item:hover .retry-button {
+						opacity: 1;
+						pointer-events: auto;
+					}
 				`}
 			</style>
 
@@ -79,6 +90,15 @@ const HistoryPreview = ({ showHistoryView }: HistoryPreviewProps) => {
 					.slice(0, 3)
 					.map((item) => (
 						<div key={item.id} className="history-preview-item" onClick={() => handleHistorySelect(item.id)}>
+							<VSCodeButton
+								appearance="icon"
+								className="retry-button"
+								onClick={(e) => {
+									e.stopPropagation()
+									vscode.postMessage({ type: "retryTask", text: item.id })
+								}}>
+								<span className="codicon codicon-refresh"></span>
+							</VSCodeButton>
 							<div style={{ padding: "12px" }}>
 								<div
 									style={{

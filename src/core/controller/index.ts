@@ -415,6 +415,27 @@ export class Controller {
 			case "exportTaskWithId":
 				this.exportTaskWithId(message.text!)
 				break
+			case "retryTask": {
+				if (message.text) {
+					// message.text contains the taskId
+					try {
+						const { historyItem } = await this.getTaskWithId(message.text)
+						// Ensure chat view is visible before starting the new task
+						await this.postMessageToWebview({
+							type: "action",
+							action: "chatButtonClicked",
+						})
+						// Start a new task using the original description
+						await this.initTask(historyItem.task)
+					} catch (error) {
+						console.error("Failed to retry task:", error)
+						vscode.window.showErrorMessage(
+							`Failed to retry task: ${error instanceof Error ? error.message : String(error)}`,
+						)
+					}
+				}
+				break
+			}
 			case "resetState":
 				await this.resetState()
 				break

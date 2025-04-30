@@ -22,6 +22,7 @@ export interface WebviewMessage {
 		| "deleteTaskWithId"
 		| "exportTaskWithId"
 		| "resetState"
+		| "retryTask" // Added for retrying tasks from history
 		| "requestOllamaModels"
 		| "requestLmStudioModels"
 		| "requestClarifaiModels" // Add request type
