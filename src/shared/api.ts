@@ -1624,6 +1624,13 @@ export type ClarifaiModelId = keyof typeof clarifaiModels
 // Using Llama 3 70B as default, adjust if needed
 export const clarifaiDefaultModelId: ClarifaiModelId = "qwen/qwenLM/models/QwQ-32B-AWQ"
 export const clarifaiModels = {
+	"qwen/qwenLM/models/Qwen3-30B-A3B-GGUF": {
+		inputPrice: 0.00236 * 1_000_000, // Placeholder price
+		outputPrice: 0.00236 * 1_000_000, // Placeholder price
+		contextWindow: 128000,
+		supportsPromptCache: false, // Assuming false
+		supportsImages: false, // Assuming false
+	},
 	"qwen/qwenLM/models/QwQ-32B-AWQ": {
 		inputPrice: 0.00117 * 1_000_000, // Placeholder price
 		outputPrice: 0.00117 * 1_000_000, // Placeholder price
