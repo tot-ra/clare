@@ -3,12 +3,12 @@
 	"displayName": "CLARE",
 	"description": "Autonomous coding agent right in your IDE, capable of creating/editing files, running commands, using the browser, and more with your permission every step of the way.",
 	"version": "3.12.3",
-	"icon": "assets/icons/clarifai-icon.svg",
+	"icon": "assets/icons/clare.png",
 	"engines": {
 		"vscode": "^1.84.0"
 	},
 	"author": {
-		"name": "Artjom Kurapov, Cline Bot Inc."
+		"name": "Artjom Kurapov"
 	},
 	"license": "Apache-2.0",
 	"publisher": "tot-ra",
@@ -56,7 +56,7 @@
 				{
 					"id": "clare-ActivityBar",
 					"title": "CLARE",
-					"icon": "assets/icons/clarifai-icon.svg"
+					"icon": "assets/icons/clare.png"
 				}
 			]
 		},
