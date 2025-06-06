@@ -130,9 +130,9 @@ export class Task {
 	didFinishAbortingStream = false
 	abandoned = false
 	private diffViewProvider: DiffViewProvider
-	private checkpointTracker?: CheckpointTracker
-	checkpointTrackerErrorMessage?: string
-	conversationHistoryDeletedRange?: [number, number]
+	// private checkpointTracker?: CheckpointTracker
+	// checkpointTrackerErrorMessage?: string
+	// conversationHistoryDeletedRange?: [number, number]
 	isInitialized = false
 	isAwaitingPlanResponse = false
 	didRespondToPlanAskBySwitchingMode = false
@@ -199,7 +199,7 @@ export class Task {
 		// Initialize taskId first
 		if (historyItem) {
 			this.taskId = historyItem.id
-			this.conversationHistoryDeletedRange = historyItem.conversationHistoryDeletedRange
+			// this.conversationHistoryDeletedRange = historyItem.conversationHistoryDeletedRange
 		} else if (task || images) {
 			this.taskId = Date.now().toString()
 		} else {
@@ -260,7 +260,7 @@ export class Task {
 		// these values allow us to reconstruct the conversation history at the time this cline message was created
 		// it's important that apiConversationHistory is initialized before we add cline messages
 		message.conversationHistoryIndex = this.apiConversationHistory.length - 1 // NOTE: this is the index of the last added message which is the user message, and once the clinemessages have been presented we update the apiconversationhistory with the completed assistant message. This means when resetting to a message, we need to +1 this index to get the correct assistant message that this tool use corresponds to
-		message.conversationHistoryDeletedRange = this.conversationHistoryDeletedRange
+		// message.conversationHistoryDeletedRange = this.conversationHistoryDeletedRange
 		this.clineMessages.push(message)
 		await this.saveClineMessagesAndUpdateHistory()
 	}
@@ -300,300 +300,300 @@ export class Task {
 				cacheReads: apiMetrics.totalCacheReads,
 				totalCost: apiMetrics.totalCost,
 				size: taskDirSize,
-				shadowGitConfigWorkTree: await this.checkpointTracker?.getShadowGitConfigWorkTree(),
-				conversationHistoryDeletedRange: this.conversationHistoryDeletedRange,
+				// shadowGitConfigWorkTree: await this.checkpointTracker?.getShadowGitConfigWorkTree(),
+				// conversationHistoryDeletedRange: this.conversationHistoryDeletedRange,
 			})
 		} catch (error) {
 			console.error("Failed to save cline messages:", error)
 		}
 	}
 
-	async restoreCheckpoint(messageTs: number, restoreType: ClineCheckpointRestore) {
-		const messageIndex = this.clineMessages.findIndex((m) => m.ts === messageTs)
-		const message = this.clineMessages[messageIndex]
-		if (!message) {
-			console.error("Message not found", this.clineMessages)
-			return
-		}
+	// async restoreCheckpoint(messageTs: number, restoreType: ClineCheckpointRestore) {
+	// 	const messageIndex = this.clineMessages.findIndex((m) => m.ts === messageTs)
+	// 	const message = this.clineMessages[messageIndex]
+	// 	if (!message) {
+	// 		console.error("Message not found", this.clineMessages)
+	// 		return
+	// 	}
 
-		let didWorkspaceRestoreFail = false
+	// 	let didWorkspaceRestoreFail = false
 
-		switch (restoreType) {
-			case "task":
-				break
-			case "taskAndWorkspace":
-			case "workspace":
-				if (!this.checkpointTracker && !this.checkpointTrackerErrorMessage) {
-					try {
-						this.checkpointTracker = await CheckpointTracker.create(this.taskId, this.context.globalStorageUri.fsPath)
-					} catch (error) {
-						const errorMessage = error instanceof Error ? error.message : "Unknown error"
-						console.error("Failed to initialize checkpoint tracker:", errorMessage)
-						this.checkpointTrackerErrorMessage = errorMessage
-						await this.postStateToWebview()
-						vscode.window.showErrorMessage(errorMessage)
-						didWorkspaceRestoreFail = true
-					}
-				}
-				if (message.lastCheckpointHash && this.checkpointTracker) {
-					try {
-						await this.checkpointTracker.resetHead(message.lastCheckpointHash)
-					} catch (error) {
-						const errorMessage = error instanceof Error ? error.message : "Unknown error"
-						vscode.window.showErrorMessage("Failed to restore checkpoint: " + errorMessage)
-						didWorkspaceRestoreFail = true
-					}
-				}
-				break
-		}
+	// 	switch (restoreType) {
+	// 		case "task":
+	// 			break
+	// 		case "taskAndWorkspace":
+	// 		case "workspace":
+	// 			if (!this.checkpointTracker && !this.checkpointTrackerErrorMessage) {
+	// 				try {
+	// 					this.checkpointTracker = await CheckpointTracker.create(this.taskId, this.context.globalStorageUri.fsPath)
+	// 				} catch (error) {
+	// 					const errorMessage = error instanceof Error ? error.message : "Unknown error"
+	// 					console.error("Failed to initialize checkpoint tracker:", errorMessage)
+	// 					this.checkpointTrackerErrorMessage = errorMessage
+	// 					await this.postStateToWebview()
+	// 					vscode.window.showErrorMessage(errorMessage)
+	// 					didWorkspaceRestoreFail = true
+	// 				}
+	// 			}
+	// 			if (message.lastCheckpointHash && this.checkpointTracker) {
+	// 				try {
+	// 					await this.checkpointTracker.resetHead(message.lastCheckpointHash)
+	// 				} catch (error) {
+	// 					const errorMessage = error instanceof Error ? error.message : "Unknown error"
+	// 					vscode.window.showErrorMessage("Failed to restore checkpoint: " + errorMessage)
+	// 					didWorkspaceRestoreFail = true
+	// 				}
+	// 			}
+	// 			break
+	// 	}
 
-		if (!didWorkspaceRestoreFail) {
-			switch (restoreType) {
-				case "task":
-				case "taskAndWorkspace":
-					this.conversationHistoryDeletedRange = message.conversationHistoryDeletedRange
-					const newConversationHistory = this.apiConversationHistory.slice(
-						0,
-						(message.conversationHistoryIndex || 0) + 2,
-					) // +1 since this index corresponds to the last user message, and another +1 since slice end index is exclusive
-					await this.overwriteApiConversationHistory(newConversationHistory)
+	// 	if (!didWorkspaceRestoreFail) {
+	// 		switch (restoreType) {
+	// 			case "task":
+	// 			case "taskAndWorkspace":
+	// 				this.conversationHistoryDeletedRange = message.conversationHistoryDeletedRange
+	// 				const newConversationHistory = this.apiConversationHistory.slice(
+	// 					0,
+	// 					(message.conversationHistoryIndex || 0) + 2,
+	// 				) // +1 since this index corresponds to the last user message, and another +1 since slice end index is exclusive
+	// 				await this.overwriteApiConversationHistory(newConversationHistory)
 
-					// update the context history state
-					await this.contextManager.truncateContextHistory(
-						message.ts,
-						await ensureTaskDirectoryExists(this.getContext(), this.taskId),
-					)
+	// 				// update the context history state
+	// 				await this.contextManager.truncateContextHistory(
+	// 					message.ts,
+	// 					await ensureTaskDirectoryExists(this.getContext(), this.taskId),
+	// 				)
 
-					// aggregate deleted api reqs info so we don't lose costs/tokens
-					const deletedMessages = this.clineMessages.slice(messageIndex + 1)
-					const deletedApiReqsMetrics = getApiMetrics(combineApiRequests(combineCommandSequences(deletedMessages)))
+	// 				// aggregate deleted api reqs info so we don't lose costs/tokens
+	// 				const deletedMessages = this.clineMessages.slice(messageIndex + 1)
+	// 				const deletedApiReqsMetrics = getApiMetrics(combineApiRequests(combineCommandSequences(deletedMessages)))
 
-					const newClineMessages = this.clineMessages.slice(0, messageIndex + 1)
-					await this.overwriteClineMessages(newClineMessages) // calls saveClineMessages which saves historyItem
+	// 				const newClineMessages = this.clineMessages.slice(0, messageIndex + 1)
+	// 				await this.overwriteClineMessages(newClineMessages) // calls saveClineMessages which saves historyItem
 
-					await this.say(
-						"deleted_api_reqs",
-						JSON.stringify({
-							tokensIn: deletedApiReqsMetrics.totalTokensIn,
-							tokensOut: deletedApiReqsMetrics.totalTokensOut,
-							cacheWrites: deletedApiReqsMetrics.totalCacheWrites,
-							cacheReads: deletedApiReqsMetrics.totalCacheReads,
-							cost: deletedApiReqsMetrics.totalCost,
-						} satisfies ClineApiReqInfo),
-					)
-					break
-				case "workspace":
-					break
-			}
+	// 				await this.say(
+	// 					"deleted_api_reqs",
+	// 					JSON.stringify({
+	// 						tokensIn: deletedApiReqsMetrics.totalTokensIn,
+	// 						tokensOut: deletedApiReqsMetrics.totalTokensOut,
+	// 						cacheWrites: deletedApiReqsMetrics.totalCacheWrites,
+	// 						cacheReads: deletedApiReqsMetrics.totalCacheReads,
+	// 						cost: deletedApiReqsMetrics.totalCost,
+	// 					} satisfies ClineApiReqInfo),
+	// 				)
+	// 				break
+	// 			case "workspace":
+	// 				break
+	// 		}
 
-			switch (restoreType) {
-				case "task":
-					vscode.window.showInformationMessage("Task messages have been restored to the checkpoint")
-					break
-				case "workspace":
-					vscode.window.showInformationMessage("Workspace files have been restored to the checkpoint")
-					break
-				case "taskAndWorkspace":
-					vscode.window.showInformationMessage("Task and workspace have been restored to the checkpoint")
-					break
-			}
+	// 		switch (restoreType) {
+	// 			case "task":
+	// 				vscode.window.showInformationMessage("Task messages have been restored to the checkpoint")
+	// 				break
+	// 			case "workspace":
+	// 				vscode.window.showInformationMessage("Workspace files have been restored to the checkpoint")
+	// 				break
+	// 			case "taskAndWorkspace":
+	// 				vscode.window.showInformationMessage("Task and workspace have been restored to the checkpoint")
+	// 				break
+	// 		}
 
-			if (restoreType !== "task") {
-				// Set isCheckpointCheckedOut flag on the message
-				// Find all checkpoint messages before this one
-				const checkpointMessages = this.clineMessages.filter((m) => m.say === "checkpoint_created")
-				const currentMessageIndex = checkpointMessages.findIndex((m) => m.ts === messageTs)
+	// 		if (restoreType !== "task") {
+	// 			// Set isCheckpointCheckedOut flag on the message
+	// 			// Find all checkpoint messages before this one
+	// 			const checkpointMessages = this.clineMessages.filter((m) => m.say === "checkpoint_created")
+	// 			const currentMessageIndex = checkpointMessages.findIndex((m) => m.ts === messageTs)
 
-				// Set isCheckpointCheckedOut to false for all checkpoint messages
-				checkpointMessages.forEach((m, i) => {
-					m.isCheckpointCheckedOut = i === currentMessageIndex
-				})
-			}
+	// 			// Set isCheckpointCheckedOut to false for all checkpoint messages
+	// 			checkpointMessages.forEach((m, i) => {
+	// 				m.isCheckpointCheckedOut = i === currentMessageIndex
+	// 			})
+	// 		}
 
-			await this.saveClineMessagesAndUpdateHistory()
+	// 		await this.saveClineMessagesAndUpdateHistory()
 
-			await this.postMessageToWebview({ type: "relinquishControl" })
+	// 		await this.postMessageToWebview({ type: "relinquishControl" })
 
-			this.cancelTask() // the task is already cancelled by the provider beforehand, but we need to re-init to get the updated messages
-		} else {
-			await this.postMessageToWebview({ type: "relinquishControl" })
-		}
-	}
+	// 		this.cancelTask() // the task is already cancelled by the provider beforehand, but we need to re-init to get the updated messages
+	// 	} else {
+	// 		await this.postMessageToWebview({ type: "relinquishControl" })
+	// 	}
+	// }
 
-	async presentMultifileDiff(messageTs: number, seeNewChangesSinceLastTaskCompletion: boolean) {
-		const relinquishButton = () => {
-			this.postMessageToWebview({ type: "relinquishControl" })
-		}
+	// async presentMultifileDiff(messageTs: number, seeNewChangesSinceLastTaskCompletion: boolean) {
+	// 	const relinquishButton = () => {
+	// 		this.postMessageToWebview({ type: "relinquishControl" })
+	// 	}
 
-		console.log("presentMultifileDiff", messageTs)
-		const messageIndex = this.clineMessages.findIndex((m) => m.ts === messageTs)
-		const message = this.clineMessages[messageIndex]
-		if (!message) {
-			console.error("Message not found")
-			relinquishButton()
-			return
-		}
-		const hash = message.lastCheckpointHash
-		if (!hash) {
-			console.error("No checkpoint hash found")
-			relinquishButton()
-			return
-		}
+	// 	console.log("presentMultifileDiff", messageTs)
+	// 	const messageIndex = this.clineMessages.findIndex((m) => m.ts === messageTs)
+	// 	const message = this.clineMessages[messageIndex]
+	// 	if (!message) {
+	// 		console.error("Message not found")
+	// 		relinquishButton()
+	// 		return
+	// 	}
+	// 	const hash = message.lastCheckpointHash
+	// 	if (!hash) {
+	// 		console.error("No checkpoint hash found")
+	// 		relinquishButton()
+	// 		return
+	// 	}
 
-		// TODO: handle if this is called from outside original workspace, in which case we need to show user error message we can't show diff outside of workspace?
-		if (!this.checkpointTracker && !this.checkpointTrackerErrorMessage) {
-			try {
-				this.checkpointTracker = await CheckpointTracker.create(this.taskId, this.context.globalStorageUri.fsPath)
-			} catch (error) {
-				const errorMessage = error instanceof Error ? error.message : "Unknown error"
-				console.error("Failed to initialize checkpoint tracker:", errorMessage)
-				this.checkpointTrackerErrorMessage = errorMessage
-				await this.postStateToWebview()
-				vscode.window.showErrorMessage(errorMessage)
-				relinquishButton()
-				return
-			}
-		}
+	// 	// TODO: handle if this is called from outside original workspace, in which case we need to show user error message we can't show diff outside of workspace?
+	// 	if (!this.checkpointTracker && !this.checkpointTrackerErrorMessage) {
+	// 		try {
+	// 			this.checkpointTracker = await CheckpointTracker.create(this.taskId, this.context.globalStorageUri.fsPath)
+	// 		} catch (error) {
+	// 			const errorMessage = error instanceof Error ? error.message : "Unknown error"
+	// 			console.error("Failed to initialize checkpoint tracker:", errorMessage)
+	// 			this.checkpointTrackerErrorMessage = errorMessage
+	// 			await this.postStateToWebview()
+	// 			vscode.window.showErrorMessage(errorMessage)
+	// 			relinquishButton()
+	// 			return
+	// 		}
+	// 	}
 
-		let changedFiles:
-			| {
-					relativePath: string
-					absolutePath: string
-					before: string
-					after: string
-			  }[]
-			| undefined
+	// 	let changedFiles:
+	// 		| {
+	// 				relativePath: string
+	// 				absolutePath: string
+	// 				before: string
+	// 				after: string
+	// 		  }[]
+	// 		| undefined
 
-		try {
-			if (seeNewChangesSinceLastTaskCompletion) {
-				// Get last task completed
-				const lastTaskCompletedMessageCheckpointHash = findLast(
-					this.clineMessages.slice(0, messageIndex),
-					(m) => m.say === "completion_result",
-				)?.lastCheckpointHash // ask is only used to relinquish control, its the last say we care about
-				// if undefined, then we get diff from beginning of git
-				// if (!lastTaskCompletedMessage) {
-				// 	console.error("No previous task completion message found")
-				// 	return
-				// }
-				// This value *should* always exist
-				const firstCheckpointMessageCheckpointHash = this.clineMessages.find(
-					(m) => m.say === "checkpoint_created",
-				)?.lastCheckpointHash
+	// 	try {
+	// 		if (seeNewChangesSinceLastTaskCompletion) {
+	// 			// Get last task completed
+	// 			const lastTaskCompletedMessageCheckpointHash = findLast(
+	// 				this.clineMessages.slice(0, messageIndex),
+	// 				(m) => m.say === "completion_result",
+	// 			)?.lastCheckpointHash // ask is only used to relinquish control, its the last say we care about
+	// 			// if undefined, then we get diff from beginning of git
+	// 			// if (!lastTaskCompletedMessage) {
+	// 			// 	console.error("No previous task completion message found")
+	// 			// 	return
+	// 			// }
+	// 			// This value *should* always exist
+	// 			const firstCheckpointMessageCheckpointHash = this.clineMessages.find(
+	// 				(m) => m.say === "checkpoint_created",
+	// 			)?.lastCheckpointHash
 
-				const previousCheckpointHash = lastTaskCompletedMessageCheckpointHash || firstCheckpointMessageCheckpointHash // either use the diff between the first checkpoint and the task completion, or the diff between the latest two task completions
+	// 			const previousCheckpointHash = lastTaskCompletedMessageCheckpointHash || firstCheckpointMessageCheckpointHash // either use the diff between the first checkpoint and the task completion, or the diff between the latest two task completions
 
-				if (!previousCheckpointHash) {
-					vscode.window.showErrorMessage("Unexpected error: No checkpoint hash found")
-					relinquishButton()
-					return
-				}
+	// 			if (!previousCheckpointHash) {
+	// 				vscode.window.showErrorMessage("Unexpected error: No checkpoint hash found")
+	// 				relinquishButton()
+	// 				return
+	// 			}
 
-				// Get changed files between current state and commit
-				changedFiles = await this.checkpointTracker?.getDiffSet(previousCheckpointHash, hash)
-				if (!changedFiles?.length) {
-					vscode.window.showInformationMessage("No changes found")
-					relinquishButton()
-					return
-				}
-			} else {
-				// Get changed files between current state and commit
-				changedFiles = await this.checkpointTracker?.getDiffSet(hash)
-				if (!changedFiles?.length) {
-					vscode.window.showInformationMessage("No changes found")
-					relinquishButton()
-					return
-				}
-			}
-		} catch (error) {
-			const errorMessage = error instanceof Error ? error.message : "Unknown error"
-			vscode.window.showErrorMessage("Failed to retrieve diff set: " + errorMessage)
-			relinquishButton()
-			return
-		}
+	// 			// Get changed files between current state and commit
+	// 			changedFiles = await this.checkpointTracker?.getDiffSet(previousCheckpointHash, hash)
+	// 			if (!changedFiles?.length) {
+	// 				vscode.window.showInformationMessage("No changes found")
+	// 				relinquishButton()
+	// 				return
+	// 			}
+	// 		} else {
+	// 			// Get changed files between current state and commit
+	// 			changedFiles = await this.checkpointTracker?.getDiffSet(hash)
+	// 			if (!changedFiles?.length) {
+	// 				vscode.window.showInformationMessage("No changes found")
+	// 				relinquishButton()
+	// 				return
+	// 			}
+	// 		}
+	// 	} catch (error) {
+	// 		const errorMessage = error instanceof Error ? error.message : "Unknown error"
+	// 		vscode.window.showErrorMessage("Failed to retrieve diff set: " + errorMessage)
+	// 		relinquishButton()
+	// 		return
+	// 	}
 
-		// Check if multi-diff editor is enabled in VS Code settings
-		// const config = vscode.workspace.getConfiguration()
-		// const isMultiDiffEnabled = config.get("multiDiffEditor.experimental.enabled")
+	// 	// Check if multi-diff editor is enabled in VS Code settings
+	// 	// const config = vscode.workspace.getConfiguration()
+	// 	// const isMultiDiffEnabled = config.get("multiDiffEditor.experimental.enabled")
 
-		// if (!isMultiDiffEnabled) {
-		// 	vscode.window.showErrorMessage(
-		// 		"Please enable 'multiDiffEditor.experimental.enabled' in your VS Code settings to use this feature.",
-		// 	)
-		// 	relinquishButton()
-		// 	return
-		// }
-		// Open multi-diff editor
-		await vscode.commands.executeCommand(
-			"vscode.changes",
-			seeNewChangesSinceLastTaskCompletion ? "New changes" : "Changes since snapshot",
-			changedFiles.map((file) => [
-				vscode.Uri.file(file.absolutePath),
-				vscode.Uri.parse(`${DIFF_VIEW_URI_SCHEME}:${file.relativePath}`).with({
-					query: Buffer.from(file.before ?? "").toString("base64"),
-				}),
-				vscode.Uri.parse(`${DIFF_VIEW_URI_SCHEME}:${file.relativePath}`).with({
-					query: Buffer.from(file.after ?? "").toString("base64"),
-				}),
-			]),
-		)
-		relinquishButton()
-	}
+	// 	// if (!isMultiDiffEnabled) {
+	// 	// 	vscode.window.showErrorMessage(
+	// 	// 		"Please enable 'multiDiffEditor.experimental.enabled' in your VS Code settings to use this feature.",
+	// 	// 	)
+	// 	// 	relinquishButton()
+	// 	// 	return
+	// 	// }
+	// 	// Open multi-diff editor
+	// 	await vscode.commands.executeCommand(
+	// 		"vscode.changes",
+	// 		seeNewChangesSinceLastTaskCompletion ? "New changes" : "Changes since snapshot",
+	// 		changedFiles.map((file) => [
+	// 			vscode.Uri.file(file.absolutePath),
+	// 			vscode.Uri.parse(`${DIFF_VIEW_URI_SCHEME}:${file.relativePath}`).with({
+	// 				query: Buffer.from(file.before ?? "").toString("base64"),
+	// 			}),
+	// 			vscode.Uri.parse(`${DIFF_VIEW_URI_SCHEME}:${file.relativePath}`).with({
+	// 				query: Buffer.from(file.after ?? "").toString("base64"),
+	// 			}),
+	// 		]),
+	// 	)
+	// 	relinquishButton()
+	// }
 
 	async doesLatestTaskCompletionHaveNewChanges() {
-		const messageIndex = findLastIndex(this.clineMessages, (m) => m.say === "completion_result")
-		const message = this.clineMessages[messageIndex]
-		if (!message) {
-			console.error("Completion message not found")
-			return false
-		}
-		const hash = message.lastCheckpointHash
-		if (!hash) {
-			console.error("No checkpoint hash found")
-			return false
-		}
+		// const messageIndex = findLastIndex(this.clineMessages, (m) => m.say === "completion_result")
+		// const message = this.clineMessages[messageIndex]
+		// if (!message) {
+		// 	console.error("Completion message not found")
+		// 	return false
+		// }
+		// const hash = message.lastCheckpointHash
+		// if (!hash) {
+		// 	console.error("No checkpoint hash found")
+		// 	return false
+		// }
 
-		if (!this.checkpointTracker && !this.checkpointTrackerErrorMessage) {
-			try {
-				this.checkpointTracker = await CheckpointTracker.create(this.taskId, this.context.globalStorageUri.fsPath)
-			} catch (error) {
-				const errorMessage = error instanceof Error ? error.message : "Unknown error"
-				console.error("Failed to initialize checkpoint tracker:", errorMessage)
-				return false
-			}
-		}
+		// // if (!this.checkpointTracker && !this.checkpointTrackerErrorMessage) {
+		// // 	try {
+		// // 		this.checkpointTracker = await CheckpointTracker.create(this.taskId, this.context.globalStorageUri.fsPath)
+		// // 	} catch (error) {
+		// // 		const errorMessage = error instanceof Error ? error.message : "Unknown error"
+		// // 		console.error("Failed to initialize checkpoint tracker:", errorMessage)
+		// // 		return false
+		// // 	}
+		// // }
 
-		// Get last task completed
-		const lastTaskCompletedMessage = findLast(this.clineMessages.slice(0, messageIndex), (m) => m.say === "completion_result")
+		// // Get last task completed
+		// const lastTaskCompletedMessage = findLast(this.clineMessages.slice(0, messageIndex), (m) => m.say === "completion_result")
 
-		try {
-			// Get last task completed
-			const lastTaskCompletedMessageCheckpointHash = lastTaskCompletedMessage?.lastCheckpointHash // ask is only used to relinquish control, its the last say we care about
-			// if undefined, then we get diff from beginning of git
-			// if (!lastTaskCompletedMessage) {
-			// 	console.error("No previous task completion message found")
-			// 	return
-			// }
-			// This value *should* always exist
-			const firstCheckpointMessageCheckpointHash = this.clineMessages.find(
-				(m) => m.say === "checkpoint_created",
-			)?.lastCheckpointHash
+		// try {
+		// 	// Get last task completed
+		// 	const lastTaskCompletedMessageCheckpointHash = lastTaskCompletedMessage?.lastCheckpointHash // ask is only used to relinquish control, its the last say we care about
+		// 	// if undefined, then we get diff from beginning of git
+		// 	// if (!lastTaskCompletedMessage) {
+		// 	// 	console.error("No previous task completion message found")
+		// 	// 	return
+		// 	// }
+		// 	// This value *should* always exist
+		// 	const firstCheckpointMessageCheckpointHash = this.clineMessages.find(
+		// 		(m) => m.say === "checkpoint_created",
+		// 	)?.lastCheckpointHash
 
-			const previousCheckpointHash = lastTaskCompletedMessageCheckpointHash || firstCheckpointMessageCheckpointHash // either use the diff between the first checkpoint and the task completion, or the diff between the latest two task completions
+		// 	const previousCheckpointHash = lastTaskCompletedMessageCheckpointHash || firstCheckpointMessageCheckpointHash // either use the diff between the first checkpoint and the task completion, or the diff between the latest two task completions
 
-			if (!previousCheckpointHash) {
-				return false
-			}
+		// 	if (!previousCheckpointHash) {
+		// 		return false
+		// 	}
 
-			// Get count of changed files between current state and commit
-			const changedFilesCount = (await this.checkpointTracker?.getDiffCount(previousCheckpointHash, hash)) || 0
-			if (changedFilesCount > 0) {
-				return true
-			}
-		} catch (error) {
-			console.error("Failed to get diff set:", error)
-			return false
-		}
+		// 	// Get count of changed files between current state and commit
+		// 	// const changedFilesCount = (await this.checkpointTracker?.getDiffCount(previousCheckpointHash, hash)) || 0
+		// 	// if (changedFilesCount > 0) {
+		// 	// 	return true
+		// 	// }
+		// } catch (error) {
+		// 	console.error("Failed to get diff set:", error)
+		// 	return false
+		// }
 
 		return false
 	}
@@ -1042,46 +1042,41 @@ export class Task {
 
 	async saveCheckpoint(isAttemptCompletionMessage: boolean = false) {
 		// Set isCheckpointCheckedOut to false for all checkpoint_created messages
-		this.clineMessages.forEach((message) => {
-			if (message.say === "checkpoint_created") {
-				message.isCheckpointCheckedOut = false
-			}
-		})
-
-		if (!isAttemptCompletionMessage) {
-			// ensure we aren't creating a duplicate checkpoint
-			const lastMessage = this.clineMessages.at(-1)
-			if (lastMessage?.say === "checkpoint_created") {
-				return
-			}
-
-			// For non-attempt completion we just say checkpoints
-			await this.say("checkpoint_created")
-			this.checkpointTracker?.commit().then(async (commitHash) => {
-				const lastCheckpointMessage = findLast(this.clineMessages, (m) => m.say === "checkpoint_created")
-				if (lastCheckpointMessage) {
-					lastCheckpointMessage.lastCheckpointHash = commitHash
-					await this.saveClineMessagesAndUpdateHistory()
-				}
-			}) // silently fails for now
-
-			//
-		} else {
-			// attempt completion requires checkpoint to be sync so that we can present button after attempt_completion
-			const commitHash = await this.checkpointTracker?.commit()
-			// For attempt_completion, find the last completion_result message and set its checkpoint hash. This will be used to present the 'see new changes' button
-			const lastCompletionResultMessage = findLast(
-				this.clineMessages,
-				(m) => m.say === "completion_result" || m.ask === "completion_result",
-			)
-			if (lastCompletionResultMessage) {
-				lastCompletionResultMessage.lastCheckpointHash = commitHash
-				await this.saveClineMessagesAndUpdateHistory()
-			}
-		}
-
+		// this.clineMessages.forEach((message) => {
+		// 	if (message.say === "checkpoint_created") {
+		// 		message.isCheckpointCheckedOut = false
+		// 	}
+		// })
+		// if (!isAttemptCompletionMessage) {
+		// 	// ensure we aren't creating a duplicate checkpoint
+		// 	const lastMessage = this.clineMessages.at(-1)
+		// 	if (lastMessage?.say === "checkpoint_created") {
+		// 		return
+		// 	}
+		// 	// // For non-attempt completion we just say checkpoints
+		// 	// await this.say("checkpoint_created")
+		// 	// this.checkpointTracker?.commit().then(async (commitHash) => {
+		// 	// 	const lastCheckpointMessage = findLast(this.clineMessages, (m) => m.say === "checkpoint_created")
+		// 	// 	if (lastCheckpointMessage) {
+		// 	// 		lastCheckpointMessage.lastCheckpointHash = commitHash
+		// 	// 		await this.saveClineMessagesAndUpdateHistory()
+		// 	// 	}
+		// 	// }) // silently fails for now
+		// 	//
+		// } else {
+		// 	// attempt completion requires checkpoint to be sync so that we can present button after attempt_completion
+		// 	const commitHash = await this.checkpointTracker?.commit()
+		// 	// For attempt_completion, find the last completion_result message and set its checkpoint hash. This will be used to present the 'see new changes' button
+		// 	const lastCompletionResultMessage = findLast(
+		// 		this.clineMessages,
+		// 		(m) => m.say === "completion_result" || m.ask === "completion_result",
+		// 	)
+		// 	if (lastCompletionResultMessage) {
+		// 		lastCompletionResultMessage.lastCheckpointHash = commitHash
+		// 		await this.saveClineMessagesAndUpdateHistory()
+		// 	}
+		// }
 		// if (commitHash) {
-
 		// Previously we checkpointed every message, but this is excessive and unnecessary.
 		// // Start from the end and work backwards until we find a tool use or another message with a hash
 		// for (let i = this.clineMessages.length - 1; i >= 0; i--) {
@@ -1092,7 +1087,6 @@ export class Task {
 		// 	}
 		// 	// Update this message with a hash
 		// 	message.lastCheckpointHash = commitHash
-
 		// 	// We only care about adding the hash to the last tool use (we don't want to add this hash to every prior message ie for tasks pre-checkpoint)
 		// 	const isToolUse =
 		// 		message.say === "tool" ||
@@ -1107,7 +1101,6 @@ export class Task {
 		// 		message.say === "browser_action" ||
 		// 		message.say === "browser_action_launch" ||
 		// 		message.ask === "browser_action_launch"
-
 		// 	if (isToolUse) {
 		// 		break
 		// 	}
@@ -1359,13 +1352,13 @@ export class Task {
 			this.apiConversationHistory,
 			this.clineMessages,
 			this.api,
-			this.conversationHistoryDeletedRange,
+			undefined, //this.conversationHistoryDeletedRange,
 			previousApiReqIndex,
 			await ensureTaskDirectoryExists(this.getContext(), this.taskId),
 		)
 
 		if (contextManagementMetadata.updatedConversationHistoryDeletedRange) {
-			this.conversationHistoryDeletedRange = contextManagementMetadata.conversationHistoryDeletedRange
+			// this.conversationHistoryDeletedRange = contextManagementMetadata.conversationHistoryDeletedRange
 			await this.saveClineMessagesAndUpdateHistory() // saves task history item which we use to keep track of conversation history deleted range
 		}
 
@@ -1380,62 +1373,62 @@ export class Task {
 			yield firstChunk.value
 			this.isWaitingForFirstChunk = false
 		} catch (error) {
-			const isOpenRouter = this.api instanceof OpenRouterHandler || this.api instanceof ClineHandler
-			const isAnthropic = this.api instanceof AnthropicHandler
-			const isOpenRouterContextWindowError = checkIsOpenRouterContextWindowError(error) && isOpenRouter
-			const isAnthropicContextWindowError = checkIsAnthropicContextWindowError(error) && isAnthropic
+			// const isOpenRouter = this.api instanceof OpenRouterHandler || this.api instanceof ClineHandler
+			// const isAnthropic = this.api instanceof AnthropicHandler
+			// const isOpenRouterContextWindowError = checkIsOpenRouterContextWindowError(error) && isOpenRouter
+			// const isAnthropicContextWindowError = checkIsAnthropicContextWindowError(error) && isAnthropic
 
-			if (isAnthropic && isAnthropicContextWindowError && !this.didAutomaticallyRetryFailedApiRequest) {
-				this.conversationHistoryDeletedRange = this.contextManager.getNextTruncationRange(
-					this.apiConversationHistory,
-					this.conversationHistoryDeletedRange,
-					"quarter", // Force aggressive truncation
-				)
-				await this.saveClineMessagesAndUpdateHistory()
+			// if (isAnthropic && isAnthropicContextWindowError && !this.didAutomaticallyRetryFailedApiRequest) {
+			// 	this.conversationHistoryDeletedRange = this.contextManager.getNextTruncationRange(
+			// 		this.apiConversationHistory,
+			// 		this.conversationHistoryDeletedRange,
+			// 		"quarter", // Force aggressive truncation
+			// 	)
+			// 	await this.saveClineMessagesAndUpdateHistory()
 
-				this.didAutomaticallyRetryFailedApiRequest = true
-			} else if (isOpenRouter && !this.didAutomaticallyRetryFailedApiRequest) {
-				if (isOpenRouterContextWindowError) {
-					this.conversationHistoryDeletedRange = this.contextManager.getNextTruncationRange(
-						this.apiConversationHistory,
-						this.conversationHistoryDeletedRange,
-						"quarter", // Force aggressive truncation
-					)
-					await this.saveClineMessagesAndUpdateHistory()
-				}
+			// 	this.didAutomaticallyRetryFailedApiRequest = true
+			// } else if (isOpenRouter && !this.didAutomaticallyRetryFailedApiRequest) {
+			// 	if (isOpenRouterContextWindowError) {
+			// 		this.conversationHistoryDeletedRange = this.contextManager.getNextTruncationRange(
+			// 			this.apiConversationHistory,
+			// 			this.conversationHistoryDeletedRange,
+			// 			"quarter", // Force aggressive truncation
+			// 		)
+			// 		await this.saveClineMessagesAndUpdateHistory()
+			// 	}
 
-				console.log("first chunk failed, waiting 1 second before retrying")
-				await setTimeoutPromise(1000)
-				this.didAutomaticallyRetryFailedApiRequest = true
-			} else {
-				// request failed after retrying automatically once, ask user if they want to retry again
-				// note that this api_req_failed ask is unique in that we only present this option if the api hasn't streamed any content yet (ie it fails on the first chunk due), as it would allow them to hit a retry button. However if the api failed mid-stream, it could be in any arbitrary state where some tools may have executed, so that error is handled differently and requires cancelling the task entirely.
+			// 	console.log("first chunk failed, waiting 1 second before retrying")
+			// 	await setTimeoutPromise(1000)
+			// 	this.didAutomaticallyRetryFailedApiRequest = true
+			// } else {
+			// 	// request failed after retrying automatically once, ask user if they want to retry again
+			// 	// note that this api_req_failed ask is unique in that we only present this option if the api hasn't streamed any content yet (ie it fails on the first chunk due), as it would allow them to hit a retry button. However if the api failed mid-stream, it could be in any arbitrary state where some tools may have executed, so that error is handled differently and requires cancelling the task entirely.
 
-				if (isOpenRouterContextWindowError || isAnthropicContextWindowError) {
-					const truncatedConversationHistory = this.contextManager.getTruncatedMessages(
-						this.apiConversationHistory,
-						this.conversationHistoryDeletedRange,
-					)
+			// 	if (isOpenRouterContextWindowError || isAnthropicContextWindowError) {
+			// 		const truncatedConversationHistory = this.contextManager.getTruncatedMessages(
+			// 			this.apiConversationHistory,
+			// 			this.conversationHistoryDeletedRange,
+			// 		)
 
-					// If the conversation has more than 3 messages, we can truncate again. If not, then the conversation is bricked.
-					// ToDo: Allow the user to change their input if this is the case.
-					if (truncatedConversationHistory.length > 3) {
-						error = new Error("Context window exceeded. Click retry to truncate the conversation and try again.")
-						this.didAutomaticallyRetryFailedApiRequest = false
-					}
-				}
+			// 		// If the conversation has more than 3 messages, we can truncate again. If not, then the conversation is bricked.
+			// 		// ToDo: Allow the user to change their input if this is the case.
+			// 		if (truncatedConversationHistory.length > 3) {
+			// 			error = new Error("Context window exceeded. Click retry to truncate the conversation and try again.")
+			// 			this.didAutomaticallyRetryFailedApiRequest = false
+			// 		}
+			// 	}
 
-				const errorMessage = this.formatErrorWithStatusCode(error)
+			// 	const errorMessage = this.formatErrorWithStatusCode(error)
 
-				const { response } = await this.ask("api_req_failed", errorMessage)
+			// 	const { response } = await this.ask("api_req_failed", errorMessage)
 
-				if (response !== "yesButtonClicked") {
-					// this will never happen since if noButtonClicked, we will clear current task, aborting this instance
-					throw new Error("API request failed")
-				}
+			// 	if (response !== "yesButtonClicked") {
+			// 		// this will never happen since if noButtonClicked, we will clear current task, aborting this instance
+			// 		throw new Error("API request failed")
+			// 	}
 
-				await this.say("api_req_retried")
-			}
+			// 	await this.say("api_req_retried")
+			// }
 			// delegate generator output from the recursive call
 			yield* this.attemptApiRequest(previousApiReqIndex)
 			return
@@ -1970,7 +1963,7 @@ export class Task {
 
 								await this.diffViewProvider.reset()
 
-								await this.saveCheckpoint()
+								// await this.saveCheckpoint()
 
 								break
 							}
@@ -2567,7 +2560,7 @@ export class Task {
 
 								pushToolResult(result)
 
-								await this.saveCheckpoint()
+								// await this.saveCheckpoint()
 
 								break
 							}
@@ -2687,7 +2680,7 @@ export class Task {
 								await this.say("mcp_server_response", toolResultPretty)
 								pushToolResult(formatResponse.toolResult(toolResultPretty))
 
-								await this.saveCheckpoint()
+								// await this.saveCheckpoint()
 
 								break
 							}
@@ -3038,7 +3031,7 @@ export class Task {
 										// last message is completion_result
 										// we have command string, which means we have the result as well, so finish it (doesn't have to exist yet)
 										await this.say("completion_result", removeClosingTag("result", result), undefined, false)
-										await this.saveCheckpoint(true)
+										// await this.saveCheckpoint(true)
 										await addNewChangesFlagToLastCompletionResultMessage()
 										await this.ask("command", removeClosingTag("command", command), block.partial).catch(
 											() => {},
@@ -3074,13 +3067,14 @@ export class Task {
 									if (lastMessage && lastMessage.ask !== "command") {
 										// haven't sent a command message yet so first send completion_result then command
 										await this.say("completion_result", result, undefined, false)
-										await this.saveCheckpoint(true)
+										// await this.saveCheckpoint(true)
 										await addNewChangesFlagToLastCompletionResultMessage()
 										telemetryService.captureTaskCompleted(this.taskId)
-									} else {
-										// we already sent a command message, meaning the complete completion message has also been sent
-										await this.saveCheckpoint(true)
 									}
+									//  else {
+									// 	// we already sent a command message, meaning the complete completion message has also been sent
+									// 	await this.saveCheckpoint(true)
+									// }
 
 									// complete command message
 									const didApprove = await askApproval("command", command)
@@ -3097,7 +3091,7 @@ export class Task {
 									commandResult = execCommandResult
 								} else {
 									await this.say("completion_result", result, undefined, false)
-									await this.saveCheckpoint(true)
+									// await this.saveCheckpoint(true)
 									await addNewChangesFlagToLastCompletionResultMessage()
 									telemetryService.captureTaskCompleted(this.taskId)
 								}
@@ -3238,10 +3232,10 @@ export class Task {
 		const previousApiReqIndex = findLastIndex(this.clineMessages, (m) => m.say === "api_req_started")
 
 		// Save checkpoint if this is the first API request
-		const isFirstRequest = this.clineMessages.filter((m) => m.say === "api_req_started").length === 0
-		if (isFirstRequest) {
-			await this.say("checkpoint_created") // no hash since we need to wait for CheckpointTracker to be initialized
-		}
+		// const isFirstRequest = this.clineMessages.filter((m) => m.say === "api_req_started").length === 0
+		// if (isFirstRequest) {
+		// 	await this.say("checkpoint_created") // no hash since we need to wait for CheckpointTracker to be initialized
+		// }
 
 		// getting verbose details is an expensive operation, it uses globby to top-down build file structure of project which for large projects can take a few seconds
 		// for the best UX we show a placeholder api_req_started message with a loading spinner as this happens
@@ -3255,32 +3249,32 @@ export class Task {
 		// use this opportunity to initialize the checkpoint tracker (can be expensive to initialize in the constructor)
 		// FIXME: right now we're letting users init checkpoints for old tasks, but this could be a problem if opening a task in the wrong workspace
 		// isNewTask &&
-		if (!this.checkpointTracker && !this.checkpointTrackerErrorMessage) {
-			try {
-				this.checkpointTracker = await pTimeout(
-					CheckpointTracker.create(this.taskId, this.context.globalStorageUri.fsPath),
-					{
-						milliseconds: 15_000,
-						message:
-							"Checkpoints taking too long to initialize. Consider re-opening Cline in a project that uses git, or disabling checkpoints.",
-					},
-				)
-			} catch (error) {
-				const errorMessage = error instanceof Error ? error.message : "Unknown error"
-				console.error("Failed to initialize checkpoint tracker:", errorMessage)
-				this.checkpointTrackerErrorMessage = errorMessage // will be displayed right away since we saveClineMessages next which posts state to webview
-			}
-		}
+		// if (!this.checkpointTracker && !this.checkpointTrackerErrorMessage) {
+		// 	try {
+		// 		this.checkpointTracker = await pTimeout(
+		// 			CheckpointTracker.create(this.taskId, this.context.globalStorageUri.fsPath),
+		// 			{
+		// 				milliseconds: 15_000,
+		// 				message:
+		// 					"Checkpoints taking too long to initialize. Consider re-opening Cline in a project that uses git, or disabling checkpoints.",
+		// 			},
+		// 		)
+		// 	} catch (error) {
+		// 		const errorMessage = error instanceof Error ? error.message : "Unknown error"
+		// 		console.error("Failed to initialize checkpoint tracker:", errorMessage)
+		// 		this.checkpointTrackerErrorMessage = errorMessage // will be displayed right away since we saveClineMessages next which posts state to webview
+		// 	}
+		// }
 
 		// Now that checkpoint tracker is initialized, update the dummy checkpoint_created message with the commit hash. (This is necessary since we use the API request loading as an opportunity to initialize the checkpoint tracker, which can take some time)
-		if (isFirstRequest) {
-			const commitHash = await this.checkpointTracker?.commit()
-			const lastCheckpointMessage = findLast(this.clineMessages, (m) => m.say === "checkpoint_created")
-			if (lastCheckpointMessage) {
-				lastCheckpointMessage.lastCheckpointHash = commitHash
-				await this.saveClineMessagesAndUpdateHistory()
-			}
-		}
+		// if (isFirstRequest) {
+		// 	const commitHash = await this.checkpointTracker?.commit()
+		// 	const lastCheckpointMessage = findLast(this.clineMessages, (m) => m.say === "checkpoint_created")
+		// 	if (lastCheckpointMessage) {
+		// 		lastCheckpointMessage.lastCheckpointHash = commitHash
+		// 		await this.saveClineMessagesAndUpdateHistory()
+		// 	}
+		// }
 
 		const [parsedUserContent, environmentDetails] = await this.loadContext(userContent, includeFileDetails)
 		userContent = parsedUserContent

@@ -13,7 +13,7 @@ export class ClarifaiHandler implements ApiHandler {
 
 	constructor(options: ApiHandlerOptions) {
 		this.options = options
-		Logger.info("ClarifaiHandler initialized")
+		// Logger.info("ClarifaiHandler initialized")
 	}
 
 	createMessage(systemPrompt: string, messages: Anthropic.Messages.MessageParam[]): ApiStream {
@@ -42,7 +42,7 @@ export class ClarifaiHandler implements ApiHandler {
 			throw new Error("Clarifai Model ID is not configured.")
 		}
 
-		Logger.info(`Clarifai stream called for model: ${modelId}`)
+		// Logger.info(`Clarifai stream called for model: ${modelId}`)
 
 		// Extract user_id, app_id, model_name, and version_id from the modelId
 		const modelParts = modelId.split("/")
@@ -111,6 +111,18 @@ export class ClarifaiHandler implements ApiHandler {
 					},
 				},
 			],
+
+			model: {
+				model_version: {
+					output_info: {
+						params: {
+							temperature: 0.5,
+							max_tokens: 10000,
+							top_k: 0.95,
+						},
+					},
+				},
+			},
 		}
 
 		const headers = {
@@ -118,14 +130,16 @@ export class ClarifaiHandler implements ApiHandler {
 			"Content-Type": "application/json",
 		}
 
-		Logger.info(`Clarifai Request URL: ${url}`)
-		Logger.info(`Clarifai Request Headers: ${JSON.stringify(headers)}`)
-		Logger.debug(`Clarifai Request Full Body: ${JSON.stringify(requestBody)}`)
+		// Logger.info(`Clarifai Request URL: ${url}`)
+		// Logger.debug(`Clarifai Request Full Body: ${JSON.stringify(requestBody)}`)
 		let requestBodyTxt = JSON.stringify(requestBody)
 
-		console.log(requestBodyTxt)
+		// console.log(requestBodyTxt)
 
 		try {
+			// log current time
+			console.log("Current time before request:", new Date().toISOString())
+
 			console.log("making request to url " + url)
 			const response = await axios.post(url, requestBodyTxt, {
 				headers: headers,
@@ -134,8 +148,14 @@ export class ClarifaiHandler implements ApiHandler {
 			console.log("got response")
 			console.log(response)
 
-			Logger.info(`Clarifai Response Status: ${response.status}`)
-			Logger.info(`Clarifai Raw Response Data: ${JSON.stringify(response.data, null, 2)}`)
+			// log current time after request
+			console.log("Current time after request:", new Date().toISOString())
+
+			// log time taken for request
+			const timeTaken = new Date().getTime() - new Date().getTime()
+			console.log(`Time taken for request: ${timeTaken} ms`)
+
+			// Logger.info(`Clarifai Response Status: ${response.status}`)
 
 			if (response.status === 200 && response.data?.outputs?.length > 0) {
 				let fullOutputText = ""
@@ -146,7 +166,7 @@ export class ClarifaiHandler implements ApiHandler {
 				}
 
 				if (fullOutputText.length > 0) {
-					Logger.info(`Extracted Full Output Text: ${fullOutputText}`)
+					// Logger.info(`Extracted Full Output Text: ${fullOutputText}`)
 					yield* this.parseClarifaiOutput(fullOutputText)
 				} else {
 					Logger.warn("Clarifai response was successful but contained no text output.")
@@ -154,24 +174,27 @@ export class ClarifaiHandler implements ApiHandler {
 			} else {
 				const statusDescription = response.data?.status?.description || "Unknown error"
 				const statusCode = response.data?.status?.code || response.status
-				Logger.error(`Clarifai API error: ${statusCode} - ${statusDescription}`)
-				Logger.error(`Full response: ${JSON.stringify(response.data)}`)
-				throw new Error(`Clarifai API error (${statusCode}): ${statusDescription}`)
+				// Logger.error(`Clarifai API error: ${statusCode} - ${statusDescription}`)
+				console.error(`Full response: ${JSON.stringify(response.data)}`)
+				throw new Error(`Clarifai API error (${statusCode}): ${statusDescription} - ${JSON.stringify(response.data)}`)
 			}
 		} catch (error: any) {
-			if (axios.isCancel(error)) {
-				Logger.info("Clarifai request cancelled.")
-			} else if (axios.isAxiosError(error)) {
-				Logger.error(`Clarifai API request failed: ${error.message}`)
-				Logger.error(`Response status: ${error.response?.status}`)
-				Logger.error(`Response data: ${JSON.stringify(error.response?.data)}`)
-				const statusDescription = error.response?.data?.status?.description || error.message
-				const statusCode = error.response?.data?.status?.code || error.response?.status || "Network Error"
-				throw new Error(`Clarifai API error (${statusCode}): ${statusDescription}`)
-			} else {
-				Logger.error(`Clarifai stream error: ${error}`)
-				throw new Error(`Clarifai stream error: ${error instanceof Error ? error.message : String(error)}`)
-			}
+			console.log("Error during Clarifai API request:", error)
+			// Logger.error(`Response status: ${error}`)
+
+			// if (axios.isCancel(error)) {
+			// 	Logger.info("Clarifai request cancelled.")
+			// } else if (axios.isAxiosError(error)) {
+			// 	Logger.error(`Clarifai API request failed: ${error.message}`)
+			// 	Logger.error(`Response status: ${error.response?.status}`)
+			// 	Logger.error(`Response data: ${JSON.stringify(error.response?.data)}`)
+			// 	const statusDescription = error.response?.data?.status?.description || error.message
+			// 	const statusCode = error.response?.data?.status?.code || error.response?.status || "Network Error"
+			// 	throw new Error(`Clarifai API error (${statusCode}): ${statusDescription}`)
+			// } else {
+			// 	Logger.error(`Clarifai stream error: ${error}`)
+			// 	throw new Error(`Clarifai stream error: ${error instanceof Error ? error.message : String(error)}`)
+			// }
 		}
 	}
 
@@ -217,7 +240,7 @@ export class ClarifaiHandler implements ApiHandler {
 					const toolUseId = `tool_use_${this.toolUseIdCounter++}` // Generate a unique ID
 					yield { type: "tool_use", name: toolName, content: toolContent, id: toolUseId }
 				} catch (e: any) {
-					Logger.error(`Failed to parse tool_code JSON content: ${toolCodeContent}`, e)
+					// Logger.error(`Failed to parse tool_code JSON content: ${toolCodeContent}`, e)
 					yield { type: "text", text: fullMatch } // Yield as text if parsing fails
 				}
 			} else if (toolResultContent !== undefined) {

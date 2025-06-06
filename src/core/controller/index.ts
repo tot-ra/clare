@@ -216,14 +216,15 @@ export class Controller {
 					}),
 				)
 				// post last cached models in case the call to endpoint fails
-				this.readOpenRouterModels().then((openRouterModels) => {
-					if (openRouterModels) {
-						this.postMessageToWebview({
-							type: "openRouterModels",
-							openRouterModels,
-						})
-					}
-				})
+				// this.readOpenRouterModels().then((openRouterModels) => {
+				// 	if (openRouterModels) {
+				// 		this.postMessageToWebview({
+				// 			type: "openRouterModels",
+				// 			openRouterModels,
+				// 		})
+				// 	}
+				// })
+
 				// gui relies on model info to be up-to-date to provide the most accurate pricing, so we need to fetch the latest details on launch.
 				// we do this for all users since many users switch between api providers and if they were to switch back to openrouter it would be showing outdated model info if we hadn't retrieved the latest at this point
 				// (see normalizeApiConfiguration > openrouter)
@@ -237,21 +238,22 @@ export class Controller {
 						})
 					}
 				})
+
 				this.silentlyRefreshMcpMarketplace()
-				this.refreshOpenRouterModels().then(async (openRouterModels) => {
-					if (openRouterModels) {
-						// update model info in state (this needs to be done here since we don't want to update state while settings is open, and we may refresh models there)
-						const { apiConfiguration } = await getAllExtensionState(this.context)
-						if (apiConfiguration.openRouterModelId) {
-							await updateGlobalState(
-								this.context,
-								"openRouterModelInfo",
-								openRouterModels[apiConfiguration.openRouterModelId],
-							)
-							await this.postStateToWebview()
-						}
-					}
-				})
+				// this.refreshOpenRouterModels().then(async (openRouterModels) => {
+				// 	if (openRouterModels) {
+				// 		// update model info in state (this needs to be done here since we don't want to update state while settings is open, and we may refresh models there)
+				// 		const { apiConfiguration } = await getAllExtensionState(this.context)
+				// 		if (apiConfiguration.openRouterModelId) {
+				// 			await updateGlobalState(
+				// 				this.context,
+				// 				"openRouterModelInfo",
+				// 				openRouterModels[apiConfiguration.openRouterModelId],
+				// 			)
+				// 			await this.postStateToWebview()
+				// 		}
+				// 	}
+				// })
 
 				// If user already opted in to telemetry, enable telemetry service
 				this.getStateToPostToWebview().then((state) => {
@@ -521,7 +523,7 @@ export class Controller {
 				break
 			case "checkpointDiff": {
 				if (message.number) {
-					await this.task?.presentMultifileDiff(message.number, false)
+					// await this.task?.presentMultifileDiff(message.number, false)
 				}
 				break
 			}
@@ -536,13 +538,13 @@ export class Controller {
 						console.error("Failed to init new cline instance")
 					})
 					// NOTE: cancelTask awaits abortTask, which awaits diffViewProvider.revertChanges, which reverts any edited files, allowing us to reset to a checkpoint rather than running into a state where the revertChanges function is called alongside or after the checkpoint reset
-					await this.task?.restoreCheckpoint(message.number, message.text! as ClineCheckpointRestore)
+					// await this.task?.restoreCheckpoint(message.number, message.text! as ClineCheckpointRestore)
 				}
 				break
 			}
 			case "taskCompletionViewChanges": {
 				if (message.number) {
-					await this.task?.presentMultifileDiff(message.number, true)
+					// await this.task?.presentMultifileDiff(message.number, true)
 				}
 				break
 			}
@@ -1934,7 +1936,7 @@ Here is the project's README to help you get started:\n\n${mcpDetails.readmeCont
 			customInstructions,
 			uriScheme: vscode.env.uriScheme,
 			currentTaskItem: this.task?.taskId ? (taskHistory || []).find((item) => item.id === this.task?.taskId) : undefined,
-			checkpointTrackerErrorMessage: this.task?.checkpointTrackerErrorMessage,
+			// checkpointTrackerErrorMessage: this.task?.checkpointTrackerErrorMessage,
 			clineMessages: this.task?.clineMessages || [],
 			taskHistory: (taskHistory || [])
 				.filter((item) => item.ts && item.task)
