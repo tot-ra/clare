@@ -1622,8 +1622,22 @@ export const sambanovaModels = {
 // Actual Clarifai pricing needs verification and update.
 export type ClarifaiModelId = keyof typeof clarifaiModels
 // Using Llama 3 70B as default, adjust if needed
-export const clarifaiDefaultModelId: ClarifaiModelId = "qwen/qwenLM/models/QwQ-32B-AWQ"
+export const clarifaiDefaultModelId: ClarifaiModelId = "mistralai/completion/models/Devstral-Small-2505_gguf-4bit"
 export const clarifaiModels = {
+	"gcp/generate/models/gemini-2_5-flash": {
+		inputPrice: 0.00236 * 1_000_000,
+		outputPrice: 0.00236 * 1_000_000,
+		contextWindow: 1000000,
+		supportsPromptCache: true,
+		supportsImages: true,
+	},
+	"deepseek-ai/deepseek-chat/models/DeepSeek-R1-0528-Qwen3-8B": {
+		inputPrice: 0.00236 * 1_000_000,
+		outputPrice: 0.00236 * 1_000_000,
+		contextWindow: 128000,
+		supportsPromptCache: false,
+		supportsImages: false,
+	},
 	"mistralai/completion/models/Devstral-Small-2505_gguf-4bit": {
 		inputPrice: 0.00236 * 1_000_000,
 		outputPrice: 0.00236 * 1_000_000,
