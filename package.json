@@ -2,7 +2,7 @@
 	"name": "clare",
 	"displayName": "CLARE",
 	"description": "Autonomous coding agent right in your IDE, capable of creating/editing files, running commands, using the browser, and more with your permission every step of the way.",
-	"version": "3.12.3",
+	"version": "3.12.4",
 	"icon": "assets/icons/clare.png",
 	"engines": {
 		"vscode": "^1.84.0"
