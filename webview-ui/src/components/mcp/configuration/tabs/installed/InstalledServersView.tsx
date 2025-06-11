@@ -48,7 +48,7 @@ const InstalledServersView = () => {
 						onClick={() => {
 							vscode.postMessage({
 								type: "openExtensionSettings",
-								text: "cline.mcp",
+								text: "clare.mcp",
 							})
 						}}
 						style={{ fontSize: "0.9rem" }}>

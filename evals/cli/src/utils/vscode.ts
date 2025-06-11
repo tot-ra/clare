@@ -82,7 +82,7 @@ export async function spawnVSCode(workspacePath: string, vsixPath?: string): Pro
 		"workbench.startupEditor": "none",
 
 		// Auto-open Cline on startup
-		"cline.autoOpenOnStartup": true,
+		"clare.autoOpenOnStartup": true,
 
 		// Show the activity bar and sidebar
 		"workbench.activityBar.visible": true,

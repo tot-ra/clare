@@ -246,7 +246,7 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 				</div>
 
 				{/* Browser Settings Section */}
-				<BrowserSettingsSection />
+				{/* <BrowserSettingsSection /> */}
 
 				<div className="mt-auto pr-2 flex justify-center">
 					<SettingsButton

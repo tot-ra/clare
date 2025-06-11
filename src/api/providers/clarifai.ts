@@ -117,7 +117,7 @@ export class ClarifaiHandler implements ApiHandler {
 					output_info: {
 						params: {
 							temperature: 0.5,
-							max_tokens: 10000,
+							max_tokens: 200000,
 							top_k: 0.95,
 						},
 					},

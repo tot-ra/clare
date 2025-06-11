@@ -1712,7 +1712,7 @@ export const clarifaiModels = {
 // https://requesty.ai/models
 export const requestyDefaultModelId = "anthropic/claude-3-7-sonnet-latest"
 export const requestyDefaultModelInfo: ModelInfo = {
-	maxTokens: 8192,
+	maxTokens: 200000,
 	contextWindow: 200_000,
 	supportsImages: true,
 	supportsComputerUse: false,

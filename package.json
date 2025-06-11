@@ -36,18 +36,18 @@
 	],
 	"activationEvents": [
 		"onView:clare.SidebarProvider",
-		"onCommand:cline.plusButtonClicked",
-		"onCommand:cline.mcpButtonClicked",
-		"onCommand:cline.historyButtonClicked",
-		"onCommand:cline.popoutButtonClicked",
-		"onCommand:cline.accountButtonClicked",
-		"onCommand:cline.settingsButtonClicked",
-		"onCommand:cline.openInNewTab",
-		"onCommand:cline.addToChat",
-		"onCommand:cline.addTerminalOutputToChat",
-		"onCommand:cline.fixWithCline",
-		"onCommand:cline.focusChatInput",
-		"onCommand:cline.listClarifaiModels"
+		"onCommand:clare.plusButtonClicked",
+		"onCommand:clare.mcpButtonClicked",
+		"onCommand:clare.historyButtonClicked",
+		"onCommand:clare.popoutButtonClicked",
+		"onCommand:clare.accountButtonClicked",
+		"onCommand:clare.settingsButtonClicked",
+		"onCommand:clare.openInNewTab",
+		"onCommand:clare.addToChat",
+		"onCommand:clare.addTerminalOutputToChat",
+		"onCommand:clare.fixWithCline",
+		"onCommand:clare.focusChatInput",
+		"onCommand:clare.listClarifaiModels"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
@@ -71,70 +71,70 @@
 		},
 		"commands": [
 			{
-				"command": "cline.plusButtonClicked",
+				"command": "clare.plusButtonClicked",
 				"title": "New Task",
 				"icon": "$(add)"
 			},
 			{
-				"command": "cline.mcpButtonClicked",
+				"command": "clare.mcpButtonClicked",
 				"title": "MCP Servers",
 				"icon": "$(server)"
 			},
 			{
-				"command": "cline.historyButtonClicked",
+				"command": "clare.historyButtonClicked",
 				"title": "History",
 				"icon": "$(history)"
 			},
 			{
-				"command": "cline.popoutButtonClicked",
+				"command": "clare.popoutButtonClicked",
 				"title": "Open in Editor",
 				"icon": "$(link-external)"
 			},
 			{
-				"command": "cline.settingsButtonClicked",
+				"command": "clare.settingsButtonClicked",
 				"title": "Settings",
 				"icon": "$(settings-gear)"
 			},
 			{
-				"command": "cline.openInNewTab",
+				"command": "clare.openInNewTab",
 				"title": "Open In New Tab",
 				"category": "Cline"
 			},
 			{
-				"command": "cline.dev.createTestTasks",
+				"command": "clare.dev.createTestTasks",
 				"title": "Create Test Tasks",
 				"category": "Cline",
-				"when": "cline.isDevMode"
+				"when": "clare.isDevMode"
 			},
 			{
-				"command": "cline.addToChat",
+				"command": "clare.addToChat",
 				"title": "Add to Cline",
 				"category": "Cline"
 			},
 			{
-				"command": "cline.addTerminalOutputToChat",
+				"command": "clare.addTerminalOutputToChat",
 				"title": "Add to Cline",
 				"category": "Cline"
 			},
 			{
-				"command": "cline.fixWithCline",
+				"command": "clare.fixWithCline",
 				"title": "Fix with Cline",
 				"category": "Cline"
 			},
 			{
-				"command": "cline.focusChatInput",
+				"command": "clare.focusChatInput",
 				"title": "Jump to Chat Input",
 				"category": "Cline"
 			},
 			{
-				"command": "cline.listClarifaiModels",
+				"command": "clare.listClarifaiModels",
 				"title": "List Clarifai Models",
 				"category": "Cline"
 			}
 		],
 		"keybindings": [
 			{
-				"command": "cline.addToChat",
+				"command": "clare.addToChat",
 				"key": "cmd+'",
 				"mac": "cmd+'",
 				"win": "ctrl+'",
@@ -145,56 +145,56 @@
 		"menus": {
 			"view/title": [
 				{
-					"command": "cline.plusButtonClicked",
+					"command": "clare.plusButtonClicked",
 					"group": "navigation@1",
 					"when": "view == clare.SidebarProvider"
 				},
 				{
-					"command": "cline.mcpButtonClicked",
+					"command": "clare.mcpButtonClicked",
 					"group": "navigation@2",
 					"when": "view == clare.SidebarProvider"
 				},
 				{
-					"command": "cline.settingsButtonClicked",
+					"command": "clare.settingsButtonClicked",
 					"group": "navigation@6",
 					"when": "view == clare.SidebarProvider"
 				}
 			],
 			"editor/title": [
 				{
-					"command": "cline.plusButtonClicked",
+					"command": "clare.plusButtonClicked",
 					"group": "navigation@1",
 					"when": "activeWebviewPanelId == clare.TabPanelProvider"
 				},
 				{
-					"command": "cline.mcpButtonClicked",
+					"command": "clare.mcpButtonClicked",
 					"group": "navigation@2",
 					"when": "activeWebviewPanelId == clare.TabPanelProvider"
 				},
 				{
-					"command": "cline.settingsButtonClicked",
+					"command": "clare.settingsButtonClicked",
 					"group": "navigation@6",
 					"when": "activeWebviewPanelId == clare.TabPanelProvider"
 				}
 			],
 			"editor/context": [
 				{
-					"command": "cline.addToChat",
+					"command": "clare.addToChat",
 					"group": "navigation",
 					"when": "editorHasSelection"
 				}
 			],
 			"terminal/context": [
 				{
-					"command": "cline.addTerminalOutputToChat",
+					"command": "clare.addTerminalOutputToChat",
 					"group": "navigation"
 				}
 			]
 		},
 		"configuration": {
-			"title": "Cline",
+			"title": "clare",
 			"properties": {
-				"cline.vsCodeLmModelSelector": {
+				"clare.vsCodeLmModelSelector": {
 					"type": "object",
 					"properties": {
 						"vendor": {
@@ -208,17 +208,17 @@
 					},
 					"description": "Settings for VSCode Language Model API"
 				},
-				"cline.enableCheckpoints": {
+				"clare.enableCheckpoints": {
 					"type": "boolean",
 					"default": true,
 					"description": "Enables extension to save checkpoints of workspace throughout the task. Uses git under the hood which may not work well with large workspaces."
 				},
-				"cline.disableBrowserTool": {
+				"clare.disableBrowserTool": {
 					"type": "boolean",
 					"default": false,
 					"description": "Disables extension from spawning browser session."
 				},
-				"cline.modelSettings.o3Mini.reasoningEffort": {
+				"clare.modelSettings.o3Mini.reasoningEffort": {
 					"type": "string",
 					"enum": [
 						"low",
@@ -228,12 +228,12 @@
 					"default": "medium",
 					"description": "Controls the reasoning effort when using the o3-mini model. Higher values may result in more thorough but slower responses."
 				},
-				"cline.chromeExecutablePath": {
+				"clare.chromeExecutablePath": {
 					"type": "string",
 					"default": null,
 					"description": "Path to Chrome executable for browser use functionality. If not set, the extension will attempt to find or download it automatically."
 				},
-				"cline.preferredLanguage": {
+				"clare.preferredLanguage": {
 					"type": "string",
 					"enum": [
 						"English",
@@ -256,24 +256,24 @@
 						"Turkish - Türkçe"
 					],
 					"default": "English",
-					"description": "The language that Cline should use for communication."
+					"description": "The language that clare should use for communication."
 				},
-				"cline.mcpMarketplace.enabled": {
+				"clare.mcpMarketplace.enabled": {
 					"type": "boolean",
 					"default": true,
 					"description": "Controls whether the MCP Marketplace is enabled."
 				},
-				"cline.clarifaiApiKey": {
+				"clare.clarifaiApiKey": {
 					"type": "string",
 					"default": null,
 					"description": "API Key for Clarifai provider."
 				},
-				"cline.clarifaiApiBaseUrl": {
+				"clare.clarifaiApiBaseUrl": {
 					"type": "string",
 					"default": null,
 					"description": "Optional custom base URL for Clarifai API (e.g., for self-hosted instances). Defaults to https://api.clarifai.com."
 				},
-				"cline.panelTitle": {
+				"clare.panelTitle": {
 					"type": "string",
 					"default": "CLARE",
 					"description": "Title to display in the extension panel."

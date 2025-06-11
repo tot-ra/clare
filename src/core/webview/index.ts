@@ -133,7 +133,7 @@ export class WebviewProvider implements vscode.WebviewViewProvider {
 							text: JSON.stringify(await getTheme()),
 						})
 					}
-					if (e && e.affectsConfiguration("cline.mcpMarketplace.enabled")) {
+					if (e && e.affectsConfiguration("clare.mcpMarketplace.enabled")) {
 						// Update state when marketplace tab setting changes
 						await this.controller.postStateToWebview()
 					}
