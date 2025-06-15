@@ -12,3 +12,10 @@ Clare is a hard fork of Cline and it includes these changes:
 ![](./docs/clare.jpg)
 
 <img width="1066" alt="Screenshot 2025-04-27 at 03 56 36" src="https://github.com/user-attachments/assets/1e0f2344-b217-4c4b-8de9-0ed8024babea" />
+
+## Publishing 
+Following https://code.visualstudio.com/api/working-with-extensions/publishing-extension
+```
+vsce package
+vsce publish
+```
