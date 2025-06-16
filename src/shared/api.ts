@@ -1623,89 +1623,23 @@ export const sambanovaModels = {
 export type ClarifaiModelId = keyof typeof clarifaiModels
 // Using Llama 3 70B as default, adjust if needed
 export const clarifaiDefaultModelId: ClarifaiModelId = "mistralai/completion/models/Devstral-Small-2505_gguf-4bit"
+
+const defaultModelConfig = {
+	inputPrice: 0.00236 * 1_000_000,
+	outputPrice: 0.00236 * 1_000_000,
+	contextWindow: 1000000,
+	supportsPromptCache: true,
+	supportsImages: true,
+}
+
 export const clarifaiModels = {
-	"gcp/generate/models/gemini-2_5-flash": {
-		inputPrice: 0.00236 * 1_000_000,
-		outputPrice: 0.00236 * 1_000_000,
-		contextWindow: 1000000,
-		supportsPromptCache: true,
-		supportsImages: true,
-	},
-	"deepseek-ai/deepseek-chat/models/DeepSeek-R1-0528-Qwen3-8B": {
-		inputPrice: 0.00236 * 1_000_000,
-		outputPrice: 0.00236 * 1_000_000,
-		contextWindow: 128000,
-		supportsPromptCache: false,
-		supportsImages: false,
-	},
-	"mistralai/completion/models/Devstral-Small-2505_gguf-4bit": {
-		inputPrice: 0.00236 * 1_000_000,
-		outputPrice: 0.00236 * 1_000_000,
-		contextWindow: 128000,
-		supportsPromptCache: false,
-		supportsImages: false,
-	},
-	"qwen/qwenLM/models/Qwen3-30B-A3B-GGUF": {
-		inputPrice: 0.00236 * 1_000_000, // Placeholder price
-		outputPrice: 0.00236 * 1_000_000, // Placeholder price
-		contextWindow: 128000,
-		supportsPromptCache: false, // Assuming false
-		supportsImages: false, // Assuming false
-	},
-	"qwen/qwenLM/models/QwQ-32B-AWQ": {
-		inputPrice: 0.00117 * 1_000_000, // Placeholder price
-		outputPrice: 0.00117 * 1_000_000, // Placeholder price
-		contextWindow: 128000,
-		supportsPromptCache: false, // Assuming false
-		supportsImages: false, // Assuming false
-	},
-	"deepseek-ai/deepseek-chat/models/deepseek-V2-Chat": {
-		inputPrice: 0.004 * 1_000_000, // Placeholder price
-		outputPrice: 0.004 * 1_000_000, // Placeholder price
-		contextWindow: 128000,
-		supportsPromptCache: false, // Assuming false
-		supportsImages: false, // Assuming false
-	},
-
-	// "meta/Llama-3/models/llama-3_2-11b-vision-instruct": {
-	// 	inputPrice: 0.008 * 1_000_000, // Placeholder price
-	// 	outputPrice: 0.008 * 1_000_000, // Placeholder price
-	// 	contextWindow: 128000,
-	// 	supportsPromptCache: false, // Assuming false
-	// 	supportsImages: true, // This is a vision model
-	// },
-
-	// "meta/Llama-3/models/llama-3-70B-Instruct": {
-	// 	inputPrice: 0.008 * 1_000_000, // Placeholder price
-	// 	outputPrice: 0.008 * 1_000_000, // Placeholder price
-	// 	contextWindow: 128000,
-	// 	supportsPromptCache: false, // Assuming false
-	// 	supportsImages: false, // Assuming false
-	// },
-
-	// "meta/Llama-3/models/Llama-3_2-3B-Instruct": {
-	// 	inputPrice: 0.008 * 1_000_000, // Placeholder price
-	// 	outputPrice: 0.008 * 1_000_000, // Placeholder price
-	// 	contextWindow: 128000,
-	// 	supportsPromptCache: false, // Assuming false
-	// 	supportsImages: false, // Assuming false
-	// },
-
-	// "mistralai/completion/models/codestral-22b-instruct": {
-	// 	inputPrice: 0.005 * 1_000_000, // Placeholder price
-	// 	outputPrice: 0.005 * 1_000_000, // Placeholder price
-	// 	contextWindow: 32000,
-	// 	supportsPromptCache: false, // Assuming false
-	// 	supportsImages: false, // Assuming false
-	// },
-
-	// "qwen/qwenCoder/models/Qwen2_5-Coder-7B-Instruct-vllm":{
-	// 	inputPrice: 0.00046 * 1_000_000, // Placeholder price
-	// 	outputPrice: 0.00046 * 1_000_000, // Placeholder price
-	// 	contextWindow: 32000,
-	// 	supportsPromptCache: false, // Assuming false
-	// 	supportsImages: false, // Assuming false
-	// },
+	"anthropic/completion/models/claude-sonnet-4": defaultModelConfig,
+	"gcp/generate/models/gemini-2_5-flash": defaultModelConfig,
+	"mistralai/completion/models/Devstral-Small-2505_gguf-4bit": defaultModelConfig,
+	"deepseek-ai/deepseek-chat/models/DeepSeek-R1-0528-Qwen3-8B": defaultModelConfig,
+	"qwen/qwenLM/models/Qwen3-30B-A3B-GGUF": defaultModelConfig,
+	"qwen/qwenLM/models/QwQ-32B-AWQ": defaultModelConfig,
+	"deepseek-ai/deepseek-chat/models/deepseek-V2-Chat": defaultModelConfig,
 } as const satisfies Record<string, ModelInfo>
 
 // Requesty

@@ -4,7 +4,6 @@ import axios from "axios"
 import { ApiHandler } from "../index"
 import { ApiStream, ApiStreamChunk } from "../transform/stream"
 import { Logger } from "../../services/logging/Logger"
-import { parseStringPromise } from "xml2js" // Import xml2js for robust XML parsing
 
 // Placeholder for Clarifai API handler
 export class ClarifaiHandler implements ApiHandler {
