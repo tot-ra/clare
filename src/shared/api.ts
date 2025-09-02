@@ -1622,7 +1622,7 @@ export const sambanovaModels = {
 // Actual Clarifai pricing needs verification and update.
 export type ClarifaiModelId = keyof typeof clarifaiModels
 // Using Llama 3 70B as default, adjust if needed
-export const clarifaiDefaultModelId: ClarifaiModelId = "mistralai/completion/models/Devstral-Small-2505_gguf-4bit"
+export const clarifaiDefaultModelId: ClarifaiModelId = "openai/chat-completion/models/gpt-oss-120b"
 
 const defaultModelConfig = {
 	inputPrice: 0.00236 * 1_000_000,
@@ -1645,7 +1645,7 @@ export const clarifaiModels = {
 
 // Requesty
 // https://requesty.ai/models
-export const requestyDefaultModelId = "anthropic/claude-3-7-sonnet-latest"
+export const requestyDefaultModelId = "openai/chat-completion/models/gpt-oss-120b"
 export const requestyDefaultModelInfo: ModelInfo = {
 	maxTokens: 200000,
 	contextWindow: 200_000,
