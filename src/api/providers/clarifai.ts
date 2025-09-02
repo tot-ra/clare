@@ -100,6 +100,7 @@ export class ClarifaiHandler implements ApiHandler {
 			// Role 'tool' messages are handled as part of user messages with type 'tool_result'
 		}
 
+		// "user_app_id":{"user_id":"openai","app_id":"chat-completion"},"model_id":"gpt-oss-120b",
 		const requestBody = {
 			inputs: [
 				{
@@ -116,7 +117,7 @@ export class ClarifaiHandler implements ApiHandler {
 					output_info: {
 						params: {
 							temperature: 0.5,
-							max_tokens: 200000,
+							max_tokens: 1000000,
 							top_k: 0.95,
 						},
 					},
@@ -130,7 +131,7 @@ export class ClarifaiHandler implements ApiHandler {
 		}
 
 		// Logger.info(`Clarifai Request URL: ${url}`)
-		// Logger.debug(`Clarifai Request Full Body: ${JSON.stringify(requestBody)}`)
+		console.log(`Clarifai Request Full Body: ${JSON.stringify(requestBody)}`)
 		let requestBodyTxt = JSON.stringify(requestBody)
 
 		// console.log(requestBodyTxt)

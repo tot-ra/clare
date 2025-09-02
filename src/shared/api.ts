@@ -1633,6 +1633,7 @@ const defaultModelConfig = {
 }
 
 export const clarifaiModels = {
+	"openai/chat-completion/models/gpt-oss-120b": defaultModelConfig,
 	"anthropic/completion/models/claude-sonnet-4": defaultModelConfig,
 	"gcp/generate/models/gemini-2_5-flash": defaultModelConfig,
 	"mistralai/completion/models/Devstral-Small-2505_gguf-4bit": defaultModelConfig,
