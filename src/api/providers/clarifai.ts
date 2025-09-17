@@ -1,6 +1,7 @@
 import { Anthropic } from "@anthropic-ai/sdk"
 import { ApiHandlerOptions, ClarifaiModelId, clarifaiDefaultModelId, clarifaiModels, ModelInfo } from "../../shared/api" // Added Clarifai imports
 import axios from "axios"
+import OpenAI from "openai"
 import { ApiHandler } from "../index"
 import { ApiStream, ApiStreamChunk } from "../transform/stream"
 import { Logger } from "../../services/logging/Logger"
@@ -39,6 +40,53 @@ export class ClarifaiHandler implements ApiHandler {
 
 		if (!modelId) {
 			throw new Error("Clarifai Model ID is not configured.")
+		}
+
+		if (modelId === "openai/chat-completion/models/gpt-oss-120b") {
+			const client = new OpenAI({
+				baseURL: "https://api.clarifai.com/v2/ext/openai/v1",
+				apiKey: pat,
+			})
+
+			const openAiMessages: OpenAI.Chat.ChatCompletionMessageParam[] = [{ role: "system", content: systemPrompt }]
+			for (const msg of messages) {
+				//print msg
+				// Logger.info(`Processing message: role=${msg.role}, content=${JSON.stringify(msg.content)}`)
+				// console.log(`Processing message: role=${msg.role}, content=${JSON.stringify(msg.content)}`)
+
+				if (msg.role === "user" || msg.role === "assistant") {
+					if (Array.isArray(msg.content)) {
+						const content = msg.content
+							.map((item) => {
+								if (item.type === "text") {
+									return item.text
+								}
+								return ""
+							})
+							.join("\n")
+						openAiMessages.push({ role: msg.role, content })
+					} else {
+						openAiMessages.push({ role: msg.role, content: msg.content })
+					}
+				}
+			}
+
+			const stream = await client.chat.completions.create({
+				model: `https://clarifai.com/${modelId}`,
+				messages: openAiMessages,
+				stream: true,
+			})
+
+			for await (const chunk of stream) {
+				const delta = chunk.choices[0]?.delta
+				if (delta?.content) {
+					yield {
+						type: "text",
+						text: delta.content,
+					}
+				}
+			}
+			return
 		}
 
 		// Logger.info(`Clarifai stream called for model: ${modelId}`)
