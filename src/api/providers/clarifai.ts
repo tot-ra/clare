@@ -79,10 +79,34 @@ export class ClarifaiHandler implements ApiHandler {
 
 			for await (const chunk of stream) {
 				const delta = chunk.choices[0]?.delta
+
+				// console.log("Received chunk:", JSON.stringify(chunk))
 				if (delta?.content) {
+					const content = delta.content
+					const match = content.match(
+						/<\|start\|>assistant<\|channel\|>commentary to=(.*?)(?: <\|constrain\|>.*?)?<\|message\|>(.*?)<\|call\|>/s,
+					)
+
+					let newContent = content
+					if (match) {
+						const tool = match[1].trim().split(" ")[0]
+						const messageContent = match[2]
+
+						try {
+							const query = JSON.parse(messageContent)
+							const innerXml = Object.entries(query)
+								.map(([key, value]) => `<${key}>${value}</${key}>`)
+								.join("\n")
+							newContent = `<${tool}>\n${innerXml}\n</${tool}>`
+						} catch (e) {
+							// Not JSON, treat as XML-like string
+							newContent = messageContent.replace(/\n/g, "")
+						}
+					}
+
 					yield {
 						type: "text",
-						text: delta.content,
+						text: newContent,
 					}
 				}
 			}
@@ -179,29 +203,29 @@ export class ClarifaiHandler implements ApiHandler {
 		}
 
 		// Logger.info(`Clarifai Request URL: ${url}`)
-		console.log(`Clarifai Request Full Body: ${JSON.stringify(requestBody)}`)
+		// console.log(`Clarifai Request Full Body: ${JSON.stringify(requestBody)}`)
 		let requestBodyTxt = JSON.stringify(requestBody)
 
 		// console.log(requestBodyTxt)
 
 		try {
 			// log current time
-			console.log("Current time before request:", new Date().toISOString())
+			// console.log("Current time before request:", new Date().toISOString())
 
-			console.log("making request to url " + url)
+			// console.log("making request to url " + url)
 			const response = await axios.post(url, requestBodyTxt, {
 				headers: headers,
 				signal: abortSignal,
 			})
-			console.log("got response")
-			console.log(response)
+			// console.log("got response")
+			// console.log(response)
 
 			// log current time after request
-			console.log("Current time after request:", new Date().toISOString())
+			// console.log("Current time after request:", new Date().toISOString())
 
 			// log time taken for request
 			const timeTaken = new Date().getTime() - new Date().getTime()
-			console.log(`Time taken for request: ${timeTaken} ms`)
+			// console.log(`Time taken for request: ${timeTaken} ms`)
 
 			// Logger.info(`Clarifai Response Status: ${response.status}`)
 
