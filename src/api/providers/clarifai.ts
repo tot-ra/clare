@@ -80,6 +80,8 @@ export class ClarifaiHandler implements ApiHandler {
 			for await (const chunk of stream) {
 				const delta = chunk.choices[0]?.delta
 
+				console.log(chunk)
+
 				// console.log("Received chunk:", JSON.stringify(chunk))
 				if (delta?.content) {
 					const content = delta.content
@@ -107,6 +109,15 @@ export class ClarifaiHandler implements ApiHandler {
 					yield {
 						type: "text",
 						text: newContent,
+					}
+				}
+
+				// Emit usage information if present (mirrors OpenAI handler behavior)
+				if (chunk.usage) {
+					yield {
+						type: "usage",
+						inputTokens: chunk.usage.prompt_tokens ?? 0,
+						outputTokens: chunk.usage.completion_tokens ?? 0,
 					}
 				}
 			}
@@ -219,6 +230,7 @@ export class ClarifaiHandler implements ApiHandler {
 			})
 			// console.log("got response")
 			// console.log(response)
+			// Logger.info(JSON.stringify(response.data))
 
 			// log current time after request
 			// console.log("Current time after request:", new Date().toISOString())
@@ -227,9 +239,19 @@ export class ClarifaiHandler implements ApiHandler {
 			const timeTaken = new Date().getTime() - new Date().getTime()
 			// console.log(`Time taken for request: ${timeTaken} ms`)
 
-			// Logger.info(`Clarifai Response Status: ${response.status}`)
+			Logger.info(`Clarifai Response Status: ${response.status}`)
 
 			if (response.status === 200 && response.data?.outputs?.length > 0) {
+				// Emit usage information if present in the response
+				if (response.data?.usage) {
+					const usage = response.data.usage
+					yield {
+						type: "usage",
+						inputTokens: usage.prompt_tokens ?? 0,
+						outputTokens: usage.completion_tokens ?? 0,
+					}
+				}
+
 				let fullOutputText = ""
 				for (const output of response.data.outputs) {
 					if (output?.data?.text?.raw) {

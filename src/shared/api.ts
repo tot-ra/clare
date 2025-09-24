@@ -1625,15 +1625,21 @@ export type ClarifaiModelId = keyof typeof clarifaiModels
 export const clarifaiDefaultModelId: ClarifaiModelId = "openai/chat-completion/models/gpt-oss-120b"
 
 const defaultModelConfig = {
-	inputPrice: 0.00236 * 1_000_000,
-	outputPrice: 0.00236 * 1_000_000,
+	inputPrice: 0.025,
+	outputPrice: 2.2,
 	contextWindow: 1000000,
 	supportsPromptCache: true,
 	supportsImages: true,
 }
 
 export const clarifaiModels = {
-	"openai/chat-completion/models/gpt-oss-120b": defaultModelConfig,
+	"openai/chat-completion/models/gpt-oss-120b": {
+		inputPrice: 0.09,
+		outputPrice: 0.36,
+		contextWindow: 128000,
+		supportsPromptCache: true,
+		supportsImages: false,
+	},
 	"anthropic/completion/models/claude-sonnet-4": defaultModelConfig,
 	"gcp/generate/models/gemini-2_5-flash": defaultModelConfig,
 	"mistralai/completion/models/Devstral-Small-2505_gguf-4bit": defaultModelConfig,
