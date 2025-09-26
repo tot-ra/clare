@@ -42,7 +42,10 @@ export class ClarifaiHandler implements ApiHandler {
 			throw new Error("Clarifai Model ID is not configured.")
 		}
 
-		if (modelId === "openai/chat-completion/models/gpt-oss-120b") {
+		if (
+			modelId === "qwen/qwenLM/models/qwen3-next-80B-A3B-Thinking" ||
+			modelId === "openai/chat-completion/models/gpt-oss-120b"
+		) {
 			const client = new OpenAI({
 				baseURL: "https://api.clarifai.com/v2/ext/openai/v1",
 				apiKey: pat,
@@ -71,6 +74,8 @@ export class ClarifaiHandler implements ApiHandler {
 				}
 			}
 
+			console.log("Sending Messages:", JSON.stringify(openAiMessages))
+
 			const stream = await client.chat.completions.create({
 				model: `https://clarifai.com/${modelId}`,
 				messages: openAiMessages,
@@ -80,29 +85,30 @@ export class ClarifaiHandler implements ApiHandler {
 			for await (const chunk of stream) {
 				const delta = chunk.choices[0]?.delta
 
-				console.log(chunk)
-
-				// console.log("Received chunk:", JSON.stringify(chunk))
+				console.log("Received chunk:", JSON.stringify(chunk))
 				if (delta?.content) {
 					const content = delta.content
-					const match = content.match(
-						/<\|start\|>assistant<\|channel\|>commentary to=(.*?)(?: <\|constrain\|>.*?)?<\|message\|>(.*?)<\|call\|>/s,
-					)
+					var newContent = content
 
-					let newContent = content
-					if (match) {
-						const tool = match[1].trim().split(" ")[0]
-						const messageContent = match[2]
+					if (modelId === "openai/chat-completion/models/gpt-oss-120b") {
+						const match = content.match(
+							/<\|start\|>assistant<\|channel\|>commentary to=(.*?)(?: <\|constrain\|>.*?)?<\|message\|>(.*?)<\|call\|>/s,
+						)
 
-						try {
-							const query = JSON.parse(messageContent)
-							const innerXml = Object.entries(query)
-								.map(([key, value]) => `<${key}>${value}</${key}>`)
-								.join("\n")
-							newContent = `<${tool}>\n${innerXml}\n</${tool}>`
-						} catch (e) {
-							// Not JSON, treat as XML-like string
-							newContent = messageContent.replace(/\n/g, "")
+						if (match) {
+							const tool = match[1].trim().split(" ")[0]
+							const messageContent = match[2]
+
+							try {
+								const query = JSON.parse(messageContent)
+								const innerXml = Object.entries(query)
+									.map(([key, value]) => `<${key}>${value}</${key}>`)
+									.join("\n")
+								newContent = `<${tool}>\n${innerXml}\n</${tool}>`
+							} catch (e) {
+								// Not JSON, treat as XML-like string
+								newContent = messageContent.replace(/\n/g, "")
+							}
 						}
 					}
 

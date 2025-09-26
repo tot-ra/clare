@@ -1644,6 +1644,13 @@ export const clarifaiModels = {
 	"gcp/generate/models/gemini-2_5-flash": defaultModelConfig,
 	"mistralai/completion/models/Devstral-Small-2505_gguf-4bit": defaultModelConfig,
 	"deepseek-ai/deepseek-chat/models/DeepSeek-R1-0528-Qwen3-8B": defaultModelConfig,
+	"qwen/qwen3/models/qwen3-next-80B-A3B-Thinking": {
+		inputPrice: 1.08857,
+		outputPrice: 1.07617,
+		contextWindow: 2 * 128000,
+		supportsPromptCache: true,
+		supportsImages: false,
+	},
 	"qwen/qwenLM/models/Qwen3-30B-A3B-GGUF": defaultModelConfig,
 	"qwen/qwenLM/models/QwQ-32B-AWQ": defaultModelConfig,
 	"deepseek-ai/deepseek-chat/models/deepseek-V2-Chat": defaultModelConfig,
