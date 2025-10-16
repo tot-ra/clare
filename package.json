@@ -2,7 +2,7 @@
 	"name": "clare",
 	"displayName": "CLARE",
 	"description": "Autonomous coding agent. Uses Clarifai as backend LLM.",
-	"version": "3.12.10",
+	"version": "3.12.11",
 	"icon": "assets/icons/clare.png",
 	"engines": {
 		"vscode": "^1.84.0"

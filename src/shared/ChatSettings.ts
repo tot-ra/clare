@@ -5,5 +5,5 @@ export interface ChatSettings {
 
 export const DEFAULT_CHAT_SETTINGS: ChatSettings = {
 	mode: "act",
-	requestsPerMinuteLimit: 0,
+	requestsPerMinuteLimit: 15,
 }

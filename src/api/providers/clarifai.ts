@@ -30,6 +30,126 @@ export class ClarifaiHandler implements ApiHandler {
 		}
 	}
 
+	private async *_handleOpenAIStream(
+		pat: string,
+		modelId: string,
+		systemPrompt: string,
+		messages: Anthropic.MessageParam[],
+		useStreaming: boolean,
+	): ApiStream {
+		const client = new OpenAI({
+			baseURL: "https://api.clarifai.com/v2/ext/openai/v1",
+			apiKey: pat,
+		})
+
+		const openAiMessages: OpenAI.Chat.ChatCompletionMessageParam[] = [{ role: "system", content: systemPrompt }]
+		for (const msg of messages) {
+			console.log(`Processing message: role=${msg.role}`)
+			if (msg.role === "user" || msg.role === "assistant") {
+				if (Array.isArray(msg.content)) {
+					const content = msg.content
+						.map((item) => {
+							if (item.type === "text") {
+								return item.text
+							}
+							return ""
+						})
+						.join("\n")
+					openAiMessages.push({ role: msg.role, content })
+				} else {
+					openAiMessages.push({ role: msg.role, content: msg.content })
+				}
+			}
+		}
+
+		console.log("Sending Messages to Clarifai OpenAI endpoint:", JSON.stringify(openAiMessages, null, 2))
+
+		try {
+			if (useStreaming) {
+				const stream = await client.chat.completions.create({
+					model: `https://clarifai.com/${modelId}`,
+					messages: openAiMessages,
+					stream: true,
+				})
+
+				let hasYielded = false
+				for await (const chunk of stream) {
+					hasYielded = true
+					const delta = chunk.choices[0]?.delta
+
+					console.log("Received chunk:", JSON.stringify(chunk))
+					if (delta?.content) {
+						const content = delta.content
+						var newContent = content
+
+						if (modelId === "openai/chat-completion/models/gpt-oss-120b") {
+							const match = content.match(
+								/<\|start\|>assistant<\|channel\|>commentary to=(.*?)(?: <\|constrain\|>.*?)?<\|message\|>(.*?)<\|call\|>/s,
+							)
+
+							if (match) {
+								const tool = match[1].trim().split(" ")[0]
+								const messageContent = match[2]
+
+								try {
+									const query = JSON.parse(messageContent)
+									const innerXml = Object.entries(query)
+										.map(([key, value]) => `<${key}>${value}</${key}>`)
+										.join("\n")
+									newContent = `<${tool}>\n${innerXml}\n</${tool}>`
+								} catch (e) {
+									// Not JSON, treat as XML-like string
+									newContent = messageContent.replace(/\n/g, "")
+								}
+							}
+						}
+
+						yield {
+							type: "text",
+							text: newContent,
+						}
+					}
+
+					if (chunk.usage) {
+						yield {
+							type: "usage",
+							inputTokens: chunk.usage.prompt_tokens ?? 0,
+							outputTokens: chunk.usage.completion_tokens ?? 0,
+						}
+					}
+				}
+
+				if (!hasYielded) {
+					throw new Error("Clarifai API returned an empty stream.")
+				}
+			} else {
+				// Handle non-streaming case
+				const response = await client.chat.completions.create({
+					model: `https://clarifai.com/${modelId}`,
+					messages: openAiMessages,
+					stream: false,
+				})
+
+				if (response.choices[0]?.message?.content) {
+					yield {
+						type: "text",
+						text: response.choices[0].message.content,
+					}
+				}
+
+				if (response.usage) {
+					yield {
+						type: "usage",
+						inputTokens: response.usage.prompt_tokens ?? 0,
+						outputTokens: response.usage.completion_tokens ?? 0,
+					}
+				}
+			}
+		} catch (error: any) {
+			Logger.error(`Clarifai stream error: ${error}`)
+			throw new Error(`Clarifai stream error: ${error instanceof Error ? error.message : String(error)}`)
+		}
+	}
 	async *stream(systemPrompt: string, messages: Anthropic.MessageParam[], abortSignal: AbortSignal): ApiStream {
 		const pat = this.options.clarifaiPat
 		const modelId = this.options.apiModelId
@@ -44,93 +164,13 @@ export class ClarifaiHandler implements ApiHandler {
 
 		if (
 			modelId === "qwen/qwenLM/models/qwen3-next-80B-A3B-Thinking" ||
-			modelId === "openai/chat-completion/models/gpt-oss-120b"
+			modelId === "openai/chat-completion/models/gpt-oss-120b" ||
+			modelId === "xai/chat-completion/models/grok-code-fast-1" ||
+			modelId === "anthropic/completion/models/claude-sonnet-4_5"
 		) {
-			const client = new OpenAI({
-				baseURL: "https://api.clarifai.com/v2/ext/openai/v1",
-				apiKey: pat,
-			})
-
-			const openAiMessages: OpenAI.Chat.ChatCompletionMessageParam[] = [{ role: "system", content: systemPrompt }]
-			for (const msg of messages) {
-				//print msg
-				// Logger.info(`Processing message: role=${msg.role}, content=${JSON.stringify(msg.content)}`)
-				// console.log(`Processing message: role=${msg.role}, content=${JSON.stringify(msg.content)}`)
-
-				if (msg.role === "user" || msg.role === "assistant") {
-					if (Array.isArray(msg.content)) {
-						const content = msg.content
-							.map((item) => {
-								if (item.type === "text") {
-									return item.text
-								}
-								return ""
-							})
-							.join("\n")
-						openAiMessages.push({ role: msg.role, content })
-					} else {
-						openAiMessages.push({ role: msg.role, content: msg.content })
-					}
-				}
-			}
-
-			console.log("Sending Messages:", JSON.stringify(openAiMessages))
-
-			const stream = await client.chat.completions.create({
-				model: `https://clarifai.com/${modelId}`,
-				messages: openAiMessages,
-				stream: true,
-			})
-
-			for await (const chunk of stream) {
-				const delta = chunk.choices[0]?.delta
-
-				console.log("Received chunk:", JSON.stringify(chunk))
-				if (delta?.content) {
-					const content = delta.content
-					var newContent = content
-
-					if (modelId === "openai/chat-completion/models/gpt-oss-120b") {
-						const match = content.match(
-							/<\|start\|>assistant<\|channel\|>commentary to=(.*?)(?: <\|constrain\|>.*?)?<\|message\|>(.*?)<\|call\|>/s,
-						)
-
-						if (match) {
-							const tool = match[1].trim().split(" ")[0]
-							const messageContent = match[2]
-
-							try {
-								const query = JSON.parse(messageContent)
-								const innerXml = Object.entries(query)
-									.map(([key, value]) => `<${key}>${value}</${key}>`)
-									.join("\n")
-								newContent = `<${tool}>\n${innerXml}\n</${tool}>`
-							} catch (e) {
-								// Not JSON, treat as XML-like string
-								newContent = messageContent.replace(/\n/g, "")
-							}
-						}
-					}
-
-					yield {
-						type: "text",
-						text: newContent,
-					}
-				}
-
-				// Emit usage information if present (mirrors OpenAI handler behavior)
-				if (chunk.usage) {
-					yield {
-						type: "usage",
-						inputTokens: chunk.usage.prompt_tokens ?? 0,
-						outputTokens: chunk.usage.completion_tokens ?? 0,
-					}
-				}
-			}
+			yield* this._handleOpenAIStream(pat, modelId, systemPrompt, messages, true) // Set to true for streaming
 			return
 		}
-
-		// Logger.info(`Clarifai stream called for model: ${modelId}`)
 
 		// Extract user_id, app_id, model_name, and version_id from the modelId
 		const modelParts = modelId.split("/")
@@ -223,7 +263,7 @@ export class ClarifaiHandler implements ApiHandler {
 		// console.log(`Clarifai Request Full Body: ${JSON.stringify(requestBody)}`)
 		let requestBodyTxt = JSON.stringify(requestBody)
 
-		// console.log(requestBodyTxt)
+		console.log("Sending Messages to Clarifai endpoint:", requestBodyTxt)
 
 		try {
 			// log current time
@@ -248,6 +288,7 @@ export class ClarifaiHandler implements ApiHandler {
 			Logger.info(`Clarifai Response Status: ${response.status}`)
 
 			if (response.status === 200 && response.data?.outputs?.length > 0) {
+				let hasYielded = false
 				// Emit usage information if present in the response
 				if (response.data?.usage) {
 					const usage = response.data.usage
@@ -256,6 +297,7 @@ export class ClarifaiHandler implements ApiHandler {
 						inputTokens: usage.prompt_tokens ?? 0,
 						outputTokens: usage.completion_tokens ?? 0,
 					}
+					hasYielded = true
 				}
 
 				let fullOutputText = ""
@@ -268,8 +310,13 @@ export class ClarifaiHandler implements ApiHandler {
 				if (fullOutputText.length > 0) {
 					// Logger.info(`Extracted Full Output Text: ${fullOutputText}`)
 					yield* this.parseClarifaiOutput(fullOutputText)
+					hasYielded = true
 				} else {
 					Logger.warn("Clarifai response was successful but contained no text output.")
+				}
+
+				if (!hasYielded) {
+					throw new Error("Clarifai API returned a successful response but with no content.")
 				}
 			} else {
 				const statusDescription = response.data?.status?.description || "Unknown error"
@@ -282,19 +329,19 @@ export class ClarifaiHandler implements ApiHandler {
 			console.log("Error during Clarifai API request:", error)
 			// Logger.error(`Response status: ${error}`)
 
-			// if (axios.isCancel(error)) {
-			// 	Logger.info("Clarifai request cancelled.")
-			// } else if (axios.isAxiosError(error)) {
-			// 	Logger.error(`Clarifai API request failed: ${error.message}`)
-			// 	Logger.error(`Response status: ${error.response?.status}`)
-			// 	Logger.error(`Response data: ${JSON.stringify(error.response?.data)}`)
-			// 	const statusDescription = error.response?.data?.status?.description || error.message
-			// 	const statusCode = error.response?.data?.status?.code || error.response?.status || "Network Error"
-			// 	throw new Error(`Clarifai API error (${statusCode}): ${statusDescription}`)
-			// } else {
-			// 	Logger.error(`Clarifai stream error: ${error}`)
-			// 	throw new Error(`Clarifai stream error: ${error instanceof Error ? error.message : String(error)}`)
-			// }
+			if (axios.isCancel(error)) {
+				Logger.info("Clarifai request cancelled.")
+			} else if (axios.isAxiosError(error)) {
+				Logger.error(`Clarifai API request failed: ${error.message}`)
+				Logger.error(`Response status: ${error.response?.status}`)
+				Logger.error(`Response data: ${JSON.stringify(error.response?.data)}`)
+				const statusDescription = error.response?.data?.status?.description || error.message
+				const statusCode = error.response?.data?.status?.code || error.response?.status || "Network Error"
+				throw new Error(`Clarifai API error (${statusCode}): ${statusDescription}`)
+			} else {
+				Logger.error(`Clarifai stream error: ${error}`)
+				throw new Error(`Clarifai stream error: ${error instanceof Error ? error.message : String(error)}`)
+			}
 		}
 	}
 

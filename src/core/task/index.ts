@@ -3,17 +3,12 @@ import cloneDeep from "clone-deep"
 import getFolderSize from "get-folder-size"
 import { setTimeout as setTimeoutPromise } from "node:timers/promises"
 import os from "os"
-import pTimeout from "p-timeout"
 import pWaitFor from "p-wait-for"
 import * as path from "path"
 import { serializeError } from "serialize-error"
 import * as vscode from "vscode"
 import { ApiHandler, buildApiHandler } from "../../api"
-import { AnthropicHandler } from "../../api/providers/anthropic"
-import { ClineHandler } from "../../api/providers/cline"
-import { OpenRouterHandler } from "../../api/providers/openrouter"
 import { ApiStream } from "../../api/transform/stream"
-import CheckpointTracker from "../../integrations/checkpoints/CheckpointTracker"
 import { DIFF_VIEW_URI_SCHEME, DiffViewProvider } from "../../integrations/editor/DiffViewProvider"
 import { formatContentBlockToMarkdown } from "../../integrations/misc/export-markdown"
 import { extractTextFromFile } from "../../integrations/misc/extract-text"
@@ -1373,6 +1368,8 @@ export class Task {
 			yield firstChunk.value
 			this.isWaitingForFirstChunk = false
 		} catch (error) {
+			console.error("Error in attemptApiRequest, logging and re-throwing:", error)
+			throw error
 			// const isOpenRouter = this.api instanceof OpenRouterHandler || this.api instanceof ClineHandler
 			// const isAnthropic = this.api instanceof AnthropicHandler
 			// const isOpenRouterContextWindowError = checkIsOpenRouterContextWindowError(error) && isOpenRouter
@@ -3536,10 +3533,10 @@ export class Task {
 				didEndLoop = recDidEndLoop
 			} else {
 				// if there's no assistant_responses, that means we got no text or tool_use content blocks from API which we should assume is an error
-				await this.say(
-					"error",
-					"Unexpected API Response: The language model did not provide any assistant messages. This may indicate an issue with the API or the model's output.",
-				)
+				// if there's no assistant_responses, that means we got no text or tool_use content blocks from API which we should assume is an error
+				const errorMessage =
+					"Unexpected API Response: The language model did not provide any assistant messages. This may indicate an issue with the API or the model's output."
+				await this.say("error", errorMessage)
 				await this.addToApiConversationHistory({
 					role: "assistant",
 					content: [
@@ -3549,6 +3546,8 @@ export class Task {
 						},
 					],
 				})
+				// This throw is critical to break the retry loop.
+				throw new Error(errorMessage)
 			}
 
 			return didEndLoop // will always be false for now
